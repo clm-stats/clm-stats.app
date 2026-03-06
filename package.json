@@ -1,0 +1,13 @@
+{
+  "name": "clm-stats.app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:clm-stats/clm-stats.app.git",
+  "author": "Mitch Dzugan <mitchdzugan@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "classnames": "^2.5.1",
+    "fuzzysort": "^3.1.0",
+    "preact": "^10.28.4"
+  }
+}

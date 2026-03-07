@@ -1,13 +1,39 @@
 {
   "name": "clm-stats.app",
   "version": "1.0.0",
-  "main": "index.js",
   "repository": "git@github.com:clm-stats/clm-stats.app.git",
   "author": "Mitch Dzugan <mitchdzugan@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "dev:mkdist": "node -e 'require(\"mkdirp\").mkdirpSync(__dirname + \"/.dev\")'",
+    "dev:mkhtml": "node -e 'require(\"fs\").writeFileSync(__dirname + \"/.dev/index.html\", require(\"./js/htmlDocTemplate.js\").default())'",
+    "dev:start": "parcel ./.dev/index.html",
+    "dev": "run-s dev:mkdist dev:mkhtml dev:start"
+  },
+  "alias": {
+    "react": "preact/compat",
+    "react-dom/test-utils": "preact/test-utils",
+    "react-dom": "preact/compat",
+    "react/jsx-runtime": "preact/jsx-runtime"
+  },
   "dependencies": {
     "classnames": "^2.5.1",
     "fuzzysort": "^3.1.0",
     "preact": "^10.28.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/plugin-transform-react-jsx": "^7.28.6",
+    "@babel/preset-env": "^7.29.0",
+    "@babel/preset-react": "^7.28.5",
+    "@tailwindcss/postcss": "^4.2.1",
+    "daisyui": "^5.5.19",
+    "http-proxy-middleware": "^3.0.5",
+    "mkdirp": "^3.0.1",
+    "npm-run-all": "^4.1.5",
+    "parcel": "^2.16.4",
+    "static-server": "^2.2.1",
+    "tailwindcss": "^4.2.1",
+    "tailwindcss-animated": "^2.0.0"
   }
 }

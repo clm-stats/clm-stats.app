@@ -2306,6 +2306,11 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
+babel-plugin-jsx-imports@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-jsx-imports/-/babel-plugin-jsx-imports-1.0.0.tgz#ef1687a57d177ab70a407a38bef1ede2cd663006"
+  integrity sha512-YbwTxt3JH9Mxbb9TGjzqZZ4zLZ11HljkF4lghDL8bpVhm7AbLvQjEM/DN4ap/aHLy98D4jAzqFKgtUTWzj3gqA==
+
 babel-plugin-polyfill-corejs2@^0.4.15:
   version "0.4.16"
   resolved "https://registry.yarnpkg.com/babel-plugin-polyfill-corejs2/-/babel-plugin-polyfill-corejs2-0.4.16.tgz#a1321145f6cde738b0a412616b6bcf77f143ab36"

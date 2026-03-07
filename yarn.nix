@@ -2378,6 +2378,14 @@
       };
     }
     {
+      name = "babel_plugin_jsx_imports___babel_plugin_jsx_imports_1.0.0.tgz";
+      path = fetchurl {
+        name = "babel_plugin_jsx_imports___babel_plugin_jsx_imports_1.0.0.tgz";
+        url  = "https://registry.yarnpkg.com/babel-plugin-jsx-imports/-/babel-plugin-jsx-imports-1.0.0.tgz";
+        sha512 = "YbwTxt3JH9Mxbb9TGjzqZZ4zLZ11HljkF4lghDL8bpVhm7AbLvQjEM/DN4ap/aHLy98D4jAzqFKgtUTWzj3gqA==";
+      };
+    }
+    {
       name = "babel_plugin_polyfill_corejs2___babel_plugin_polyfill_corejs2_0.4.16.tgz";
       path = fetchurl {
         name = "babel_plugin_polyfill_corejs2___babel_plugin_polyfill_corejs2_0.4.16.tgz";

@@ -816,13 +816,15 @@ class TourneySets extends Component {
   }
 
   get activeInd() {
-    const { activeInd } = this.state;
-    const { setSummaries } = this.props.tourney;
-    return Number.isInteger(activeInd) ? activeInd : 0;
+    return this.state.activeInd || 0;
   }
 
   get activeSet() {
     return this.props.tourney.setSummaries[this.activeInd];
+  }
+
+  get activeRound() {
+    return this.activeSet ? this.activeSet.round : "-";
   }
 
   isActive(set) {
@@ -858,8 +860,7 @@ class TourneySets extends Component {
     };
   }
 
-  renderSlot(isMe) {
-    const slot = this.getSlot(isMe);
+  renderPureSlot(isMe, slot) {
     const borderFull = !slot.won
       ? "border-black/10 dark:border-white/10"
       : isMe
@@ -902,6 +903,14 @@ class TourneySets extends Component {
     );
   }
 
+  renderSlot(isMe) {
+    if (!this.activeSet) {
+      return this.renderPureSlot(isMe, { won: true, tag: "", games: "-" });
+    }
+    const slot = this.getSlot(isMe);
+    return this.renderPureSlot(isMe, slot);
+  }
+
   render() {
     const { tourney } = this.props;
     const { placingString, event } = tourney;
@@ -941,7 +950,7 @@ class TourneySets extends Component {
           </div>
         </div>
         <div className="flex flex-col items-stretch mt-2">
-          <div className="text-center italic">{this.activeSet.round}</div>
+          <div className="text-center italic">{this.activeRound}</div>
           <div
             className={cn(
               "m-4 mt-1 rounded-box bg-base-100 shadow-md flex",

@@ -1,0 +1,18 @@
+@import "tailwindcss";
+@import "tailwindcss-animated";
+@plugin "daisyui" {
+  /* themes: nord --default, night --prefersdark; */
+  themes: light --default, dark --prefersdark;
+}
+
+@custom-variant dark {
+    &:where([data-theme='dark'], [data-theme='dark'] *) {
+        @slot;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        &:where(:not([data-theme] *)) {
+            @slot;
+        }
+    }
+}

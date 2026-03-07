@@ -4,7 +4,7 @@ const path = require("path");
 const StaticServer = require("static-server");
 const { mkdirpSync } = require("mkdirp");
 
-const clmStatsCO = process.env["CLM_STATS_APP_CO"];
+const clmStatsCO = process.env["CLM_STATS_PAGES_CO"];
 
 const STATIC_SERVER_PORT = 2145;
 

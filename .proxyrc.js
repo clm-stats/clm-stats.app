@@ -42,7 +42,7 @@ staticServer.start(function () {
 
 const mkPathFilter = (s) => (url) => {
   const filepath = path.join(clmStatsCO, `docs${s}`, url);
-  return !fs.existsSync(filepath);
+  return !isFavIco(s) && !fs.existsSync(filepath);
 };
 
 module.exports = function (app) {

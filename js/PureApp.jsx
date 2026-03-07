@@ -10,6 +10,21 @@ const Sorteds = {};
 
 const defaultProfileImage = "/img/CLM_Logo_Avatar_Placeholder.png";
 
+function charImage(player, cnExtra = "") {
+  if (!player) {
+    return null;
+  }
+  if (!player.charId && player.charId !== 0) {
+    return null;
+  }
+  return (
+    <img
+      className={cn("h-5 w-5", cnExtra)}
+      src={`/chars/${player.charId}/${player.colorId}/stock.png`}
+    />
+  );
+}
+
 function canShow(rank) {
   return ((rank || {}).prEvents || 0) > 2;
 }
@@ -300,6 +315,9 @@ class AbsolutePlayerRow extends Component {
     } = this.props;
     const ind = Math.min(this.props.ind, displayRanks.length - 1);
     const canShowRank = canShow(rank) || sort.by !== "qual";
+    if (rank && rank.player && rank.player.charId) {
+      console.log([rank.player.name, rank.player.charId, rank.player.colorId]);
+    }
     return (
       <div
         key={`absoluteIdent.div.${playerIdent}`}
@@ -337,10 +355,7 @@ class AbsolutePlayerRow extends Component {
                 ),
                 name: rank.player.name,
                 pronouns: rank.player.pronouns,
-                character: ((imgName) =>
-                  !imgName ? null : (
-                    <img className="h-5 w-5" src={`/chars/${imgName}.png`} />
-                  ))(rank.player.char || U.lkupChar(rank.player.name)),
+                character: charImage(rank && rank.player),
                 qual: canShow(rank) ? Math.round(rank.conservativeRating) : "-",
                 acc: `${rank.wins || 0} - ${rank.losses || 0}`,
                 att: (
@@ -1899,7 +1914,8 @@ export default function PureApp(props) {
       prWins: player.rank.prWins,
       att: player.rank.prEvents,
       realName: (
-        <span>
+        <span className="inline-flex items-center">
+          {charImage(player, "mr-2")}
           {player.realName}
           {!player.pronouns ? null : (
             <span className="text-lg">&nbsp;({player.pronouns})</span>

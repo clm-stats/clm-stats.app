@@ -925,7 +925,7 @@ class TourneySets extends Component {
     return (
       <div className="flex flex-col my-4">
         <div className="flex px-2 items-center">
-          <div className="px-2 flex-1 flex overflow-x-scroll min-w-0">
+          <div className="px-2 flex-1 flex overflow-x-scroll min-w-0 pb-3">
             {setSummaries.map((set, setInd) => {
               return (
                 <div

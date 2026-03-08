@@ -5,10 +5,9 @@
   "author": "Mitch Dzugan <mitchdzugan@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev:mkdist": "node -e 'require(\"mkdirp\").mkdirpSync(__dirname + \"/.dev\")'",
-    "dev:mkhtml": "node -e 'require(\"fs\").writeFileSync(__dirname + \"/.dev/index.html\", require(\"./js/htmlDocTemplate.js\").default())'",
-    "dev:start": "parcel serve ./.dev/index.html",
-    "dev": "run-s dev:mkdist dev:mkhtml dev:start"
+    "dev:mkhtml": "node -e 'require(\"fs\").writeFileSync(__dirname + \"/index.html\", require(\"./js/htmlDocTemplate.js\").default())'",
+    "dev:start": "vite dev",
+    "dev": "run-s dev:mkhtml dev:start"
   },
   "alias": {
     "react": "preact/compat",
@@ -22,13 +21,8 @@
     "preact": "^10.28.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
-    "@babel/plugin-transform-react-jsx": "^7.28.6",
-    "@babel/preset-env": "^7.29.0",
-    "@babel/preset-react": "^7.28.5",
     "@preact/preset-vite": "^2.10.3",
     "@tailwindcss/postcss": "^4.2.1",
-    "babel-plugin-jsx-imports": "^1.0.0",
     "daisyui": "^5.5.19",
     "http-proxy-middleware": "^3.0.5",
     "mkdirp": "^3.0.1",

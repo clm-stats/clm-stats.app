@@ -1,6 +1,6 @@
 export default ({
-  jsPath = '../js/mountClient.js" type="module',
-  cssPath = "../styles.css",
+  jsPath = './js/mountClient.js" type="module',
+  cssPath = "./styles.css",
   body = "",
   timeline = {
     periods: [

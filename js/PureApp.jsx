@@ -1607,9 +1607,21 @@ export default function PureApp(props) {
         </div>,
       );
     }
+    function pRng(...inputs) {
+      const key = [...inputs, periodId, pids[0]].join("|");
+      const lim = 254740888;
+      let num = lim + 100;
+      for (let i = 0; i < key.length; i++) {
+        const ch = key.charCodeAt(i);
+        num *= ch;
+        num = num % lim;
+      }
+      const rngVal = ((num * num) % lim) / lim;
+      return rngVal;
+    }
     function rskel(className, min, max) {
       const d = max - min;
-      const width = `calc((${min} + (${d} * ${Math.random()})) * 1rem)`;
+      const width = `calc((${min} + (${d} * ${pRng(className, min, max)})) * 1rem)`;
       return <div style={{ width }} className={cn("skeleton", className)} />;
     }
     const skelRow = (key) =>
@@ -1619,9 +1631,9 @@ export default function PureApp(props) {
         ord: <div className="skeleton h-6 w-10" />,
         profileImage: <div className="skeleton w-full h-full" />,
         name: rskel("h-4", 5.0, 7.5),
-        pronouns: Math.random() > 0.7 ? null : rskel("h-3", 2.0, 2.5),
+        pronouns: pRng("pronouns") > 0.7 ? null : rskel("h-3", 2.0, 2.5),
         character:
-          Math.random() > 0.8 ? null : <div className="skeleton h-3 w-3" />,
+          pRng("char") > 0.8 ? null : <div className="skeleton h-3 w-3" />,
         qual: rskel("h-4", 2.75, 3.25),
         acc: (
           <div className="flex gap-1">

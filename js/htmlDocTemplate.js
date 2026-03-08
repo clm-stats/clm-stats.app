@@ -161,6 +161,20 @@ export default ({
     opacity:0.0;
   }
 }
+
+@keyframes flip-down {
+  0% {
+    opacity:0.6;
+    transform: rotateX(-40deg);
+    transform-origin: top;
+  }
+  100% {
+    opacity:1.0;
+    transform: rotateX(0);
+    transform-origin: top;
+  }
+}
+
         </style>
     </head>
     <body class="min-h-screen bg-info dark:bg-info-content">

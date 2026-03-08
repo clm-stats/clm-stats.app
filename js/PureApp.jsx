@@ -708,21 +708,10 @@ class PlayerSearch2 extends PlayerSearch {
               }}
             />
           </div>
-          {
-            null /*
-          <div
-            className={cn(
-              "hidden absolute top-[1px] left-px",
-              "w-[2px] h-[calc(100%_-_2px)] bg-black dark:bg-white",
-              { "group-focus-within:block": isStatsPage },
-            )}
-          />
-          */
-          }
         </label>
         <div
           className={cn(
-            "dropdown-content max-h-80 overflow-y-scroll",
+            "dropdown-content max-h-80 overflow-y-scroll -left-6",
             "w-full shadow-sm bg-base-200 rounded-box z-30 p-0 min-w-70",
           )}
         >
@@ -2302,7 +2291,9 @@ export default function PureApp(props) {
                           { hidden: page !== "stats" },
                         )}
                       >
-                        <li>Filter Players:</li>
+                        <li className={cn("menu-title text-center")}>
+                          Filters
+                        </li>
                         <li>
                           <a
                             className={menuCn(

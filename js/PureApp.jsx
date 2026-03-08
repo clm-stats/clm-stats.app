@@ -1209,6 +1209,7 @@ export default function PureApp(props) {
     getPlayerData,
     isInitialPage,
     isInitialTab,
+    isInitialPid,
     prevState,
     prevPage,
     tab,
@@ -1698,7 +1699,7 @@ export default function PureApp(props) {
       <div className={className}>
         <div
           className={cn(
-            animateInCn,
+            mkAnimateInCn(!isInitialPid),
             "text-center lg:text-left stat-title text-lg pb-1 lg:pb-0",
             "border-b-3 lg:border-b-0 border-gray-300 dark:border-gray-700",
           )}
@@ -1707,7 +1708,7 @@ export default function PureApp(props) {
         </div>
         <div
           className={cn(
-            animateInCn,
+            mkAnimateInCn(!isInitialPid),
             "justify-center lg:justify-start stat-value flex items-center ",
             "h-8 lg:h-12 text-2xl lg:text-[2rem]",
           )}
@@ -1723,7 +1724,9 @@ export default function PureApp(props) {
           )}
         </div>
         {!warningDesc ? null : (
-          <div className={cn(animateInCn, "stat-desc relative")}>
+          <div
+            className={cn(mkAnimateInCn(!isInitialPid), "stat-desc relative")}
+          >
             <div className={cn("whitespace-nowrap absolute top-0 left-0 h-6")}>
               * {warningDesc}
             </div>
@@ -1758,8 +1761,11 @@ export default function PureApp(props) {
       </>
     );
     return (
-      <div className="flex-1 flex flex-col p-4 overflow-visible">
-        <div className={cn(animateInCn, "flex")}>
+      <div
+        key={args.playerKey}
+        className="flex-1 flex flex-col p-4 overflow-visible"
+      >
+        <div className={cn(mkAnimateInCn(!isInitialPid), "flex")}>
           <div className="w-2 lg:w-8" />
           <div
             className={cn(
@@ -1831,6 +1837,7 @@ export default function PureApp(props) {
 
   function playersPage() {
     const player = getPlayer(0);
+    const playerKey = pids[0];
     const tourneys = [...((player || {}).tourneys || [])];
     tourneys.reverse();
     const eventsByTourneySlug = {};
@@ -1868,6 +1875,7 @@ export default function PureApp(props) {
     }
     if (isLoading || !player) {
       return purePlayersPage({
+        playerKey,
         profileImage: <div className="skeleton h-full w-full" />,
         tag: (
           <div className="skeleton relative top-1 h-[calc(100%_-_0.5rem)] w-50 lg:w-80" />
@@ -1887,6 +1895,7 @@ export default function PureApp(props) {
       return Boolean(player && canShow(player.rank));
     }
     return purePlayersPage({
+      playerKey,
       profileImage: (
         <ProfileImage
           src={player.image}

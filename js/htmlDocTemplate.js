@@ -1,7 +1,91 @@
 export default ({
-  jsPath = "../js/mountClient.js",
+  jsPath = '../js/mountClient.js" type="module',
   cssPath = "../styles.css",
   body = "",
+  timeline = {
+    periods: [
+      {
+        periodId: 14,
+        title: "2026 Act I",
+        timelineInd: 12,
+        season: "chicago_2026-1",
+      },
+      {
+        periodId: 13,
+        title: "2025 Act III",
+        timelineInd: 11,
+        season: "chicago_2025-3",
+      },
+      {
+        periodId: 12,
+        title: "2025 Act II",
+        timelineInd: 10,
+        season: "chicago_2025-2",
+      },
+      {
+        periodId: 11,
+        title: "2025 Act I",
+        timelineInd: 9,
+        season: "chicago_2025-1",
+      },
+      {
+        periodId: 10,
+        title: "2024 Act III",
+        timelineInd: 8,
+        season: "chicago_2024-3",
+      },
+      {
+        periodId: 9,
+        title: "2024 Act II",
+        timelineInd: 7,
+        season: "chicago_2024-2",
+      },
+      {
+        periodId: 8,
+        title: "2024 Act I",
+        timelineInd: 6,
+        season: "chicago_2024-1",
+      },
+      {
+        periodId: 7,
+        title: "2023 Act III",
+        timelineInd: 5,
+        season: "chicago_2023-3",
+      },
+      {
+        periodId: 6,
+        title: "2023 Act II",
+        timelineInd: 4,
+        season: "chicago_2023-2",
+      },
+      {
+        periodId: 5,
+        title: "2023 Act I",
+        timelineInd: 3,
+        season: "chicago_2023-1",
+      },
+      {
+        periodId: 4,
+        title: "2022 Fall",
+        timelineInd: 2,
+        season: "chicago_2022-4",
+      },
+      {
+        periodId: 3,
+        title: "2022 Summer",
+        timelineInd: 1,
+        season: "chicago_2022-3",
+      },
+      {
+        periodId: 2,
+        title: "2022 Spring",
+        timelineInd: 0,
+        season: "chicago_2022-2",
+      },
+    ],
+    current: 14,
+  },
+  periodId,
 } = {}) =>
   `
 <!DOCTYPE html>
@@ -12,7 +96,7 @@ export default ({
         <title> clm stats dev </title>
         <link href="${cssPath}" rel="stylesheet">
         <script>
-            document.head[":tl"] = ({"periods":[{"periodId":14,"title":"2026 Act I","timelineInd":12,"season":"chicago_2026-1"},{"periodId":13,"title":"2025 Act III","timelineInd":11,"season":"chicago_2025-3"},{"periodId":12,"title":"2025 Act II","timelineInd":10,"season":"chicago_2025-2"},{"periodId":11,"title":"2025 Act I","timelineInd":9,"season":"chicago_2025-1"},{"periodId":10,"title":"2024 Act III","timelineInd":8,"season":"chicago_2024-3"},{"periodId":9,"title":"2024 Act II","timelineInd":7,"season":"chicago_2024-2"},{"periodId":8,"title":"2024 Act I","timelineInd":6,"season":"chicago_2024-1"},{"periodId":7,"title":"2023 Act III","timelineInd":5,"season":"chicago_2023-3"},{"periodId":6,"title":"2023 Act II","timelineInd":4,"season":"chicago_2023-2"},{"periodId":5,"title":"2023 Act I","timelineInd":3,"season":"chicago_2023-1"},{"periodId":4,"title":"2022 Fall","timelineInd":2,"season":"chicago_2022-4"},{"periodId":3,"title":"2022 Summer","timelineInd":1,"season":"chicago_2022-3"},{"periodId":2,"title":"2022 Spring","timelineInd":0,"season":"chicago_2022-2"}],"current":14})
+            document.head[":tl"] = (${JSON.stringify(timeline)});
             var dbFutureCache = {};
             function fetchDbImpl(urlRest) {
                 dbFutureCache[urlRest] = new Promise((done, fail) => {
@@ -40,9 +124,9 @@ export default ({
             window.fetchPeriod = function(periodId) {
                 return fetchDb("periods/" + periodId);
             };
-            window.fetchPeriod(14);
+            window.fetchPeriod(${periodId + 1 ? periodId : timeline.current});
         </script>
-        <script defer type="module" src="${jsPath}"></script>
+        <script defer src="${jsPath}"></script>
         <script>
             /*to prevent Firefox FOUC, this must be here*/
             let FF_FOUC_FIX;

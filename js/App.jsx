@@ -97,9 +97,11 @@ export default class App extends Component {
     this.initialPage = this.state.page;
     this.initialPeriodId = this.state.periodId;
     this.initialTab = this.state.tab;
+    this.initialPid = (this.state.pids || [])[0];
     this.isInitialPage = true;
     this.isInitialPeriod = true;
     this.isInitialTab = true;
+    this.isInitialPid = true;
   }
 
   fetchPeriod(fetchedId = this.state.periodId, plusState = {}) {
@@ -264,6 +266,8 @@ export default class App extends Component {
 
   render() {
     this.isInitialTab = this.isInitialTab && this.initialTab === this.state.tab;
+    this.isInitialPid =
+      this.isInitialPid && this.initialPid === (this.state.pids || [])[0];
     this.isInitialPeriod =
       this.isInitialPeriod && this.initialPeriodId === this.state.periodId;
     this.isInitialPage =
@@ -274,6 +278,8 @@ export default class App extends Component {
       (!this.state.isLoading && this.state.players[ind]) || null;
     this.state.isInitialPeriod = this.isInitialPeriod;
     this.state.isInitialPage = this.isInitialPage;
+    this.state.isInitialTab = this.isInitialTab;
+    this.state.isInitialPid = this.isInitialPid;
     const pids = this.state.pids || [];
     this.state.pidsKey = pids.join("|");
     this.state.setUrl = (href) => this.setUrl(href);

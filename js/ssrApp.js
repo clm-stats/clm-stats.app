@@ -1,8 +1,9 @@
 import { h } from "preact";
 import App from "./PureApp";
 import * as U from "./util";
+import htmlDocTemplate from "./htmlDocTemplate";
 
-export function getPageTitle(periodId, page, timeline) {
+export function createDocString(renderElToStr, timeline, periodId, page) {
   U.setTimeline(timeline);
   const props = {
     periodId,
@@ -17,23 +18,13 @@ export function getPageTitle(periodId, page, timeline) {
     isInitialPeriod: true,
     isInitialTab: true,
   };
-  return U.pageTitle(props);
-}
-
-export function createAppEl(periodId, page, timeline) {
-  U.setTimeline(timeline);
-  const props = {
+  const bodyEl = h(App, props, []);
+  return htmlDocTemplate({
     periodId,
-    page,
-    isLoading: true,
-    pids: [],
-    sort: { by: U.resolveSortBy(), dir: U.resolveSortDir() },
-    filter: U.getDefaultFilter(periodId),
-    prevState: {},
-    getPlayerData: () => null,
-    isInitialPage: true,
-    isInitialPeriod: true,
-    isInitialTab: true,
-  };
-  return h(App, props, []);
+    timeline,
+    title: U.pageTitle(props),
+    cssPath: "/index.css",
+    jsPath: "/index.js",
+    body: renderElToStr(bodyEl),
+  });
 }

@@ -315,9 +315,6 @@ class AbsolutePlayerRow extends Component {
     } = this.props;
     const ind = Math.min(this.props.ind, displayRanks.length - 1);
     const canShowRank = canShow(rank) || sort.by !== "qual";
-    if (rank && rank.player && rank.player.charId) {
-      console.log([rank.player.name, rank.player.charId, rank.player.colorId]);
-    }
     return (
       <div
         key={`absoluteIdent.div.${playerIdent}`}
@@ -875,7 +872,7 @@ class TourneySets extends Component {
     };
   }
 
-  renderPureSlot(isMe, slot) {
+  renderPureSlot(isMe, slot, clmId) {
     const borderFull = !slot.won
       ? "border-black/10 dark:border-white/10"
       : isMe
@@ -907,9 +904,16 @@ class TourneySets extends Component {
               ...[borderFull, bgSoft, { "flex-row-reverse": !isMe }],
             )}
           >
-            <div className="overflow-hidden whitespace-nowrap text-ellipsis">
+            <a
+              {...(!clmId
+                ? {}
+                : { href: this.props.genUrl({ pids: [clmId] }) })}
+              className={cn("overflow-hidden whitespace-nowrap text-ellipsis", {
+                "cursor-pointer hover:underline hover:text-primary": !!clmId,
+              })}
+            >
               {slot.tag}
-            </div>
+            </a>
             <div className="flex-1 min-w-2" />
             <div className="font-bold"> {slot.games} </div>
           </div>
@@ -923,12 +927,11 @@ class TourneySets extends Component {
       return this.renderPureSlot(isMe, { won: true, tag: "", games: "-" });
     }
     const slot = this.getSlot(isMe);
-    return this.renderPureSlot(isMe, slot);
+    return this.renderPureSlot(isMe, slot, !isMe && this.activeSet.opClmId);
   }
 
   render() {
     const { tourney } = this.props;
-    const { placingString, event } = tourney;
     const setSummaries = [...tourney.setSummaries];
     return (
       <div className="flex flex-col my-4">
@@ -1172,7 +1175,10 @@ class TournamentsList extends Component {
                             </span>
                           </span>
                         </a>
-                        <TourneySets tourney={eventView} />
+                        <TourneySets
+                          tourney={eventView}
+                          genUrl={this.props.genUrl}
+                        />
                       </div>
                     </div>
                   ))}
@@ -2122,7 +2128,7 @@ export default function PureApp(props) {
               })}
           </ul>
         ) : (
-          <TournamentsList tourneyEvents={tourneyEvents} />
+          <TournamentsList tourneyEvents={tourneyEvents} genUrl={genUrl} />
         ),
     });
   }

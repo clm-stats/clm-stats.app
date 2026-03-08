@@ -7,7 +7,7 @@
   "scripts": {
     "dev:mkdist": "node -e 'require(\"mkdirp\").mkdirpSync(__dirname + \"/.dev\")'",
     "dev:mkhtml": "node -e 'require(\"fs\").writeFileSync(__dirname + \"/.dev/index.html\", require(\"./js/htmlDocTemplate.js\").default())'",
-    "dev:start": "parcel ./.dev/index.html",
+    "dev:start": "parcel serve ./.dev/index.html",
     "dev": "run-s dev:mkdist dev:mkhtml dev:start"
   },
   "alias": {

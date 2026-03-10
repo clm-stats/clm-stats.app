@@ -9,6 +9,7 @@ const __dirname = dirname(__filename);
 export default defineConfig({
   plugins: [preact()],
   build: {
+    outDir: `${__dirname}/dist`,
     lib: {
       entry: `${__dirname}/js/ssrApp.js`,
       formats: ["cjs"],

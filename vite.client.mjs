@@ -10,6 +10,7 @@ export default defineConfig({
   plugins: [preact()],
   build: {
     minify: "terser",
+    outDir: `${__dirname}/dist`,
     lib: {
       entry: `${__dirname}/js/mountClient.js`,
       name: "clmStats",

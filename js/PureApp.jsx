@@ -1057,7 +1057,7 @@ class TournamentsList extends Component {
                       href={`https://start.gg/${slug}`}
                       target="_blank"
                       className={cn(
-                        "flex items-stretch bg-base-300",
+                        "flex items-stretch bg-base-300 gglink",
                         "border-b-1 border-gray-300 dark:border-gray-700",
                       )}
                     >
@@ -1065,7 +1065,7 @@ class TournamentsList extends Component {
                         className={cn(
                           "transition transition-colors duration-300",
                           "relative pb-1 aspect-square bg-base-100",
-                          "group-has-[a:hover]:bg-primary/10",
+                          "group-has-[a.gglink:hover]:bg-primary/10",
                         )}
                       >
                         <img
@@ -1076,7 +1076,7 @@ class TournamentsList extends Component {
                             "text-transparent bg-info/5",
                             "transition transition-shadow duration-300",
                             "shadow-primary/10 shadow-none",
-                            "group-has-[a:hover]:shadow-md",
+                            "group-has-[a.gglink:hover]:shadow-md",
                           )}
                         />
                       </div>
@@ -1091,8 +1091,8 @@ class TournamentsList extends Component {
                             "text-lg ",
                             "transition-colors transition duration-300 font-bold",
                             "overflow-hidden whitespace-nowrap text-ellipsis",
-                            "group-has-[a:hover]:underline",
-                            "group-has-[a:hover]:text-primary",
+                            "group-has-[a.gglink:hover]:underline",
+                            "group-has-[a.gglink:hover]:text-primary",
                           )}
                         >
                           {eventGroup.tourney.tournamentName}
@@ -1124,7 +1124,7 @@ class TournamentsList extends Component {
                             "pb-1": eventInd + 1 < eventGroup.eventViews.length,
                           },
                           "transition transition-colors duration-300",
-                          "group-has-[a:hover]:bg-base-100/30",
+                          "group-has-[a.gglink:hover]:bg-base-100/30",
                           "tooltip",
                         )}
                         data-tip={
@@ -1140,16 +1140,16 @@ class TournamentsList extends Component {
                             "flex justify-between items-center",
                             "bg-base-200 border-gray-300 dark:border-gray-700",
                             "mx-4 p-2 px-4 shadow-sm rounded-t-lg",
-                            "overflow-hidden",
+                            "overflow-hidden gglink",
                             "transition transition-colors duration-300",
-                            "group-has-[a:hover]:bg-primary/5",
+                            "group-has-[a.gglink:hover]:bg-primary/5",
                             {
                               "[&>*]:opacity-50 italic":
                                 eventView.event.prIneligible,
                             },
                           )}
                         >
-                          <div className="text-md uppercase font-bold group-has-[a:hover]:underline">
+                          <div className="text-md uppercase font-bold group-has-[a.gglink:hover]:underline">
                             {eventView.event.eventName}
                           </div>
                           <span className="flex items-end">

@@ -2424,6 +2424,7 @@ export default function PureApp(props) {
                               "flex flex-col items-stretch cursor-pointer",
                             )}
                             href={genUrl({
+                              filter: { ...filter },
                               rating: !rating ? "alt1" : undefined,
                             })}
                           >

@@ -30,10 +30,44 @@ function getUrlState(href) {
   }
   const queryTab = url.searchParams.get("tab");
   const tab = U.resolveTab(page, queryTab);
-  return { page, pids, periodId, sort, filter, tab };
+  const queryRating = url.searchParams.get("rating");
+  const rating = queryRating === "alt1" ? "alt1" : undefined;
+  return { page, pids, periodId, sort, filter, tab, rating };
 }
 
-function cleanPeriod(period) {
+function getStats(arr, k) {
+  const len = arr.length;
+  const nums = arr.map((el) => el[k]);
+  const avg = nums.reduce((sum, n) => sum + n, 0) / len;
+  const variance =
+    nums.map((n) => Math.pow(n - avg, 2)).reduce((sum, d) => sum + d, 0) / len;
+  const stdev = Math.sqrt(variance);
+  return { avg, stdev };
+}
+
+function zScoreToPercentile(z) {
+  if (z < -6.5) return 0.0;
+  if (z > 6.5) return 1.0;
+  let factK = 1;
+  let sum = 0;
+  let term = 1;
+  let k = 0;
+  let loopStop = Math.exp(-23);
+  while (Math.abs(term) > loopStop) {
+    term =
+      (((0.3989422804 * Math.pow(-1, k) * Math.pow(z, k)) /
+        (2 * k + 1) /
+        Math.pow(2, k)) *
+        Math.pow(z, k + 1)) /
+      factK;
+    sum += term;
+    k++;
+    factK *= k;
+  }
+  return (sum + 0.5) * 100;
+}
+
+function cleanPeriod(period, rating) {
   const isCurrent = period.periodId === U.getPeriodId();
   for (const eventId in period.events) {
     const event = period.events[eventId];
@@ -49,7 +83,12 @@ function cleanPeriod(period) {
     period.nameByClmId[clmId] = name;
   }
   let nextClmRank = 1;
+  const stats = getStats(period.ranks, "rating");
   for (const r of period.ranks) {
+    const zscore = (r.conservativeRating - stats.avg) / stats.stdev;
+    const percentile = zScoreToPercentile(zscore);
+    const altRating = Math.floor(percentile * 10);
+    r.altRating = altRating;
     const player = period.players[r.playerIdent];
     const inRegion = U.inRegion(player.name);
     if (r.conservativeRating && inRegion && (isCurrent || r.prEvents >= 8)) {
@@ -132,7 +171,10 @@ export default class App extends Component {
         }),
       ),
     ])
-      .then(([p, ...rest]) => [cleanPeriod(p), ...rest.map(cleanPlayer)])
+      .then(([p, ...rest]) => [
+        cleanPeriod(p, this.state.rating),
+        ...rest.map(cleanPlayer),
+      ])
       .then(([period, ...players]) => {
         if (players.length > 0 && !players[0]) {
           const clmId = pids[0];

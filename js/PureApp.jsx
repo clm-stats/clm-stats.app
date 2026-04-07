@@ -312,6 +312,7 @@ class AbsolutePlayerRow extends Component {
       displayRanks,
       sort,
       rank,
+      rating,
     } = this.props;
     const ind = Math.min(this.props.ind, displayRanks.length - 1);
     const canShowRank = canShow(rank) || sort.by !== "qual";
@@ -353,7 +354,13 @@ class AbsolutePlayerRow extends Component {
                 name: rank.player.name,
                 pronouns: rank.player.pronouns,
                 character: charImage(rank && rank.player),
-                qual: canShow(rank) ? Math.round(rank.conservativeRating) : "-",
+                qual: canShow(rank)
+                  ? Math.round(
+                      rating === "alt1"
+                        ? rank.altRating
+                        : rank.conservativeRating,
+                    )
+                  : "-",
                 acc: `${rank.wins || 0} - ${rank.losses || 0}`,
                 att: (
                   <div className="flex items-center">
@@ -1190,6 +1197,7 @@ export default function PureApp(props) {
     periodId,
     isLoading,
     period,
+    rating,
     error,
     sort,
     filter,
@@ -1373,7 +1381,15 @@ export default function PureApp(props) {
               nextPeriodId,
             ),
         );
-    const P = { periodId, pids: _pids, page, sort, tab, ...overrides };
+    const P = {
+      periodId,
+      pids: _pids,
+      page,
+      sort,
+      tab,
+      rating,
+      ...overrides,
+    };
     P.sort = U.resolveSort(P.sort);
     P.pids = P.pids || [];
     if (P.page === "stats") {
@@ -1397,6 +1413,7 @@ export default function PureApp(props) {
           ? {}
           : { pids: P.pids },
       P.tab === U.resolveTab(P.page) ? {} : { tab: P.tab },
+      P.rating === "alt1" ? { rating: P.rating } : {},
     );
     const hash = P.page === "players" ? `#${P.pids[0]}` : "";
     const path =
@@ -1649,6 +1666,7 @@ export default function PureApp(props) {
           sort={sort}
           rank={mruRank(playerIdent)}
           ind={mruIndex(playerIdent)}
+          rating={rating}
         />
       );
     }
@@ -1924,7 +1942,11 @@ export default function PureApp(props) {
           ? `Includes PR ineligible players`
           : "",
       qual: canShow(player.rank)
-        ? Math.round(player.rank.conservativeRating)
+        ? Math.round(
+            rating === "alt1"
+              ? player.rank.altRating
+              : player.rank.conservativeRating,
+          )
         : "",
       acc: `${player.rank.wins} - ${player.rank.losses}`,
       prWins: player.rank.prWins,
@@ -2384,6 +2406,44 @@ export default function PureApp(props) {
                                 />
                                 <div className="swap-on text-accent">
                                   <Icon.minus className="m-1 h-3 w-3 opacity-50" />
+                                </div>
+                                <div className="swap-off text-secondary">
+                                  <Icon.xmark className="h-5 w-5" />
+                                </div>
+                              </label>
+                            </label>
+                          </a>
+                        </li>
+                        <li className={cn("menu-title text-center")}>
+                          testing
+                        </li>
+                        <li>
+                          <a
+                            className={menuCn(
+                              false,
+                              "flex flex-col items-stretch cursor-pointer",
+                            )}
+                            href={genUrl({
+                              rating: !rating ? "alt1" : undefined,
+                            })}
+                          >
+                            <label className="flex items-center justify-between">
+                              <span>view alt ratings</span>
+                              <label
+                                className={cn(
+                                  "swap swap-rotate h-7 w-7 p-1 border-1",
+                                  "rounded-box shadow-sm",
+                                  "border-gray-300 bg-white",
+                                  "dark:border-gray-700 dark:bg-black",
+                                )}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={rating === "alt1"}
+                                  onClick={(e) => e.preventDefault()}
+                                />
+                                <div className="swap-on text-accent">
+                                  <Icon.asterisk className="m-1 h-3 w-3 opacity-50" />
                                 </div>
                                 <div className="swap-off text-secondary">
                                   <Icon.xmark className="h-5 w-5" />

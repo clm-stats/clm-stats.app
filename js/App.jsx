@@ -120,6 +120,11 @@ function cleanPlayer(player) {
     return player;
   }
   player[3] = new Set(player[3]);
+  player[4] ||= {};
+  player[4].h2hByIdent ||= {};
+  for (const h2h of player[2]) {
+    player[4].h2hByIdent[h2h.opponent] = h2h;
+  }
   return player;
 }
 
@@ -167,7 +172,7 @@ export default class App extends Component {
           if (e === 404) {
             return undefined;
           }
-          throw e;
+          throw { message: `clmPlayer#${pid} not found` };
         }),
       ),
     ])

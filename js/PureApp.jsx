@@ -4,6 +4,8 @@ import Icon from "./Icon";
 import cn from "classnames";
 import fuzzysort from "fuzzysort";
 
+const misreportMsg = "Set misreported on start.gg";
+
 let hasRendered = false;
 
 const Sorteds = {};
@@ -351,7 +353,7 @@ class AbsolutePlayerRow extends Component {
                     alt="start.gg profile image"
                   />
                 ),
-                name: rank.player.name,
+                name: rank.player.tag,
                 pronouns: rank.player.pronouns,
                 character: charImage(rank && rank.player),
                 qual: canShow(rank)
@@ -401,6 +403,7 @@ class AbsolutePlayerRow extends Component {
                 mruLink: (
                   <a
                     className="nowrap text-primary hover:underline"
+                    target="_blank"
                     href={`https://start.gg/${rank.event.slug}`}
                   >
                     {rank.event.tournamentName}
@@ -940,11 +943,13 @@ class TourneySets extends Component {
                   onMouseOver={() => this.setState({ activeInd: setInd })}
                   onClick={() => this.setState({ activeInd: setInd })}
                   onFocus={() => this.setState({ activeInd: setInd })}
+                  data-tip={set.isOverridden ? misreportMsg : undefined}
                   className={cn(
                     "min-w-8 max-w-23 flex-1 flex flex-col items-center",
                     "font-extrabold text-neutral dark:text-neutral-content",
                     "mx-1 shadow-md transition transition-colors duration-300",
                     "rounded-box justify-center text-xs cursor-pointer",
+                    { "italic tooltip tooltip-right": set.isOverridden },
                     { "opacity-50": set.dq },
                     set.won ? "bg-success/10" : "bg-error/10",
                     this.isActive(set)
@@ -1319,7 +1324,13 @@ export default function PureApp(props) {
     Sorteds[periodId][sort.by][fkey] = !s
       ? toUse
       : fuzzysort
-          .go(s, toUse, { keys: ["playerIdent", "player.name"] })
+          .go(s, toUse, {
+            keys: [
+              "playerIdent",
+              "player.name",
+              (r) => (r.player.otherIdents || []).join(" "),
+            ],
+          })
           .map(({ obj }) => obj);
     return Sorteds[periodId][sort.by][fkey];
   }
@@ -1913,6 +1924,9 @@ export default function PureApp(props) {
       const player = players[h2h.opponent];
       return Boolean(player && canShow(player.rank));
     }
+    const otherIdents = (player && player.otherIdents) || [];
+    const allIdents = [...otherIdents, player.name];
+    const extraIdents = allIdents.filter((ident) => ident !== player.tag);
     return purePlayersPage({
       playerKey,
       profileImage: (
@@ -1957,6 +1971,21 @@ export default function PureApp(props) {
           {player.realName}
           {!player.pronouns ? null : (
             <span className="text-lg">&nbsp;({player.pronouns})</span>
+          )}
+          {extraIdents.length === 0 ? null : (
+            <span className="opacity-67 italic text-sm">
+              &nbsp;&nbsp;&nbsp;other tags:&nbsp;
+              {extraIdents.map((i, ind) => (
+                <span key={i}>
+                  {!ind ? (
+                    ""
+                  ) : (
+                    <span className="opacity-67">&nbsp;•&nbsp;</span>
+                  )}
+                  <span className="font-bold">{i}</span>
+                </span>
+              ))}
+            </span>
           )}
         </span>
       ),
@@ -2081,6 +2110,14 @@ export default function PureApp(props) {
                         )}
                       >
                         {sets.map((set) => {
+                          const dataTip = (() => {
+                            if (set.setInfo.prIneligible) {
+                              return "Event does not count for PR";
+                            } else if (set.setInfo.isOverridden) {
+                              return misreportMsg;
+                            }
+                            return undefined;
+                          })();
                           return (
                             <li
                               key={set.setInfo.id}
@@ -2095,7 +2132,14 @@ export default function PureApp(props) {
                                   set.setInfo.won ? "bg-success" : "bg-error",
                                 )}
                               />
-                              <div className="font-bold flex flex-row shrink-0">
+                              <div
+                                className={cn(
+                                  "*:font-bold flex flex-row shrink-0",
+                                  "tooltip-right before:z-60",
+                                  { "tooltip *:italic": !!dataTip },
+                                )}
+                                data-tip={dataTip}
+                              >
                                 <div className="w-6 flex justify-end">
                                   {set.setInfo.wonGames}
                                 </div>
@@ -2113,15 +2157,10 @@ export default function PureApp(props) {
                               <div
                                 className={cn(
                                   "shrink flex overflow-hidden",
-                                  "hover:overflow-visible",
-                                  "before:z-60",
-                                  { tooltip: set.setInfo.prIneligible },
+                                  "hover:overflow-visible before:z-60",
+                                  { "tooltip tooltip-right": !!dataTip },
                                 )}
-                                data-tip={
-                                  set.setInfo.prIneligible
-                                    ? "Event does not count for PR"
-                                    : undefined
-                                }
+                                data-tip={dataTip}
                               >
                                 <span className="text-xs leading-[calc(1.25rem_-_1px)] italic opacity-50 shrink-0">
                                   @
@@ -2136,10 +2175,8 @@ export default function PureApp(props) {
                                     "hover:text-primary duration-300",
                                     "inline-block whitespace-nowrap",
                                     "overflow-hidden text-ellipsis",
-                                    {
-                                      "opacity-50 italic":
-                                        set.setInfo.prIneligible,
-                                    },
+                                    { "opacity-50": set.setInfo.prIneligible },
+                                    { italic: !!dataTip },
                                   )}
                                 >
                                   {set.tournamentName}

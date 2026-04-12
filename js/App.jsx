@@ -286,6 +286,7 @@ export default class App extends Component {
         return;
       }
       event.preventDefault();
+      event.stopPropagation();
       this.setUrl(href);
     });
     window.addEventListener("popstate", (e) => {

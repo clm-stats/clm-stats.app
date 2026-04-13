@@ -2388,7 +2388,7 @@ export default function PureApp(props) {
                           <a
                             className={menuCn(
                               false,
-                              "flex flex-col items-stretch cursor-pointer",
+                              "flex flex-col items-stretch",
                             )}
                             href={genUrl({
                               filter: {
@@ -2400,6 +2400,7 @@ export default function PureApp(props) {
                             <label
                               className={cn(
                                 "flex items-center justify-between",
+                                "cursor-pointer",
                               )}
                             >
                               <span
@@ -2439,7 +2440,7 @@ export default function PureApp(props) {
                           <a
                             className={menuCn(
                               false,
-                              "flex flex-col items-stretch cursor-pointer",
+                              "flex flex-col items-stretch",
                             )}
                             href={genUrl({
                               filter: {
@@ -2448,7 +2449,7 @@ export default function PureApp(props) {
                               },
                             })}
                           >
-                            <label className="flex items-center justify-between">
+                            <label className="flex items-center justify-between cursor-pointer">
                               <span
                                 className={cn({
                                   "text-warning font-bold italic":
@@ -2489,14 +2490,14 @@ export default function PureApp(props) {
                           <a
                             className={menuCn(
                               false,
-                              "flex flex-col items-stretch cursor-pointer",
+                              "flex flex-col items-stretch",
                             )}
                             href={genUrl({
                               filter: { ...filter },
                               rating: !rating ? "alt1" : undefined,
                             })}
                           >
-                            <label className="flex items-center justify-between">
+                            <label className="flex items-center justify-between cursor-pointer">
                               <span>view alt ratings</span>
                               <label
                                 className={cn(

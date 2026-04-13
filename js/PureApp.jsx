@@ -624,14 +624,16 @@ class PlayerSearch2 extends PlayerSearch {
   }
 
   render() {
-    const { isStatsPage } = this.props;
+    const { isStatsPage, page } = this.props;
 
-    const getPlayerHref = ({ isOutOfPeriod, latestPeriodId, player }) =>
-      this.props.genUrl({
-        ...(this.props.isStatsPage ? { page: "players" } : {}),
-        pids: this.props.togglePid(player.id, "players"),
+    const getPlayerHref = ({ isOutOfPeriod, latestPeriodId, player }) => {
+      const targetPage = this.props.isStatsPage ? "players" : page;
+      return this.props.genUrl({
+        page: targetPage,
+        pids: this.props.togglePid(player.id, targetPage),
         periodId: isOutOfPeriod ? latestPeriodId : this.props.periodId,
       });
+    };
 
     const onKeyDown = (event) => {
       switch (event.key) {
@@ -1209,6 +1211,7 @@ export default function PureApp(props) {
     fetchedId,
     pids,
     getPlayerData,
+    skip,
     isInitialPage,
     isInitialTab,
     isInitialPid,
@@ -1229,6 +1232,13 @@ export default function PureApp(props) {
     }
     if (targetPage === "players") {
       return [pid];
+    }
+    if (targetPage === "compare") {
+      if (skip) {
+        return [pid, ...pids];
+      } else {
+        return [...pids, pid];
+      }
     }
     return [...pids, pid];
   }
@@ -1427,10 +1437,12 @@ export default function PureApp(props) {
       P.rating === "alt1" ? { rating: P.rating } : {},
     );
     const hash = P.page === "players" ? `#${P.pids[0]}` : "";
+
+    const longPath = `${U.getSeason(P.periodId)}/${P.page}`;
     const path =
       U.getPeriodId() !== P.periodId
-        ? `${U.getSeason(P.periodId)}/${P.page}`
-        : { stats: "", players: "-" }[P.page];
+        ? longPath
+        : { stats: "", players: "-" }[P.page] || longPath;
     return `/${path}${qs}${hash}`;
   }
 
@@ -1444,11 +1456,11 @@ export default function PureApp(props) {
       </li>
     );
     // {liEl("players", <Icon.user />, "Players")} // PERMANENT I THINK
-    // {liEl("compare", <Icon.userGroup />, "Compare")}
-    // {liEl("h2h", <Icon.tableCells />, "H2H")}
     return (
       <ul tabIndex={-1} className={cn("menu", ulCn)}>
         {liEl("stats", <Icon.chartColumn />, "Stats")}
+        {liEl("compare", <Icon.userGroup />, "Compare")}
+        {liEl("h2h", <Icon.tableCells />, "H2H")}
       </ul>
     );
   }
@@ -2203,7 +2215,26 @@ export default function PureApp(props) {
   }
 
   function comparePage() {
-    return <div>comparePage</div>;
+    const pL = skip ? null : getPlayer(0);
+    const pR = getPlayer(skip ? 0 : 1);
+    console.log({ pL, pR });
+    return (
+      <div className="flex flex-col">
+        <div className="flex flex-row">
+          <div>player 1</div>
+          <div>player 2</div>
+        </div>
+        <div className="flex flex-row">
+          <div>p1</div>
+          <div className="flex flex-col">
+            <div>a</div>
+            <div>b</div>
+            <div>c</div>
+          </div>
+          <div>p2</div>
+        </div>
+      </div>
+    );
   }
 
   function h2hPage() {
@@ -2507,6 +2538,7 @@ export default function PureApp(props) {
                     isStatsOff={
                       !isInitialPage && page !== "stats" && prevPage === "stats"
                     }
+                    page={page}
                     isStatsPage={isStatsPage}
                     fuzzyFiltered={fuzzyFiltered}
                   />

@@ -32,7 +32,8 @@ function getUrlState(href) {
   const tab = U.resolveTab(page, queryTab);
   const queryRating = url.searchParams.get("rating");
   const rating = queryRating === "alt1" ? "alt1" : undefined;
-  return { page, pids, periodId, sort, filter, tab, rating };
+  const skip = !!url.searchParams.get("skip");
+  return { page, pids, periodId, sort, filter, tab, rating, skip };
 }
 
 function getStats(arr, k) {
@@ -121,10 +122,15 @@ function cleanPlayer(player) {
   }
   player[3] = new Set(player[3]);
   player[4] ||= {};
+  player[4].eventsBySlug ||= {};
   player[4].h2hByIdent ||= {};
+  for (const att of player[1]) {
+    player[4].eventsBySlug[att.event.slug] = att.event;
+  }
   for (const h2h of player[2]) {
     player[4].h2hByIdent[h2h.opponent] = h2h;
   }
+  console.log(player);
   return player;
 }
 
@@ -169,9 +175,6 @@ export default class App extends Component {
       window.fetchPeriod(fetchedId),
       ...pids.map((pid) =>
         window.fetchPlayer(fetchedId, pid).catch((e) => {
-          if (e === 404) {
-            return undefined;
-          }
           throw { message: `clmPlayer#${pid} not found` };
         }),
       ),

@@ -9,8 +9,11 @@ function getUrlState(href) {
     hrefPath.toLowerCase(),
   );
   const periodId = U.resolveSeasonStr((parts || [])[1]);
-  const page =
-    hrefPath === "/-" ? "players" : U.resolvePageStr((parts || [])[2]);
+  const page = hrefPath.endsWith("/-")
+    ? "players"
+    : U.resolvePageStr((parts || [])[2]);
+
+  console.log({ hrefPath, p2: (parts || [])[2] });
   const sort = {
     by: U.resolveSortBy(url.searchParams.get("by")),
     dir: U.resolveSortDir(url.searchParams.get("dir")),
@@ -21,8 +24,8 @@ function getUrlState(href) {
   const qpids = url.searchParams.getAll("pids");
   const hpids = (() => {
     const hash = url.hash || "#";
-    const hashPid = hash.substring(1);
-    return hashPid ? [hashPid] : [];
+    const hashPidStr = hash.substring(1);
+    return hashPidStr ? hashPidStr.split("~") : [];
   })();
   const pids = [...hpids, ...qpids];
   for (const pid of pids) {
@@ -125,12 +128,11 @@ function cleanPlayer(player) {
   player[4].eventsBySlug ||= {};
   player[4].h2hByIdent ||= {};
   for (const att of player[1]) {
-    player[4].eventsBySlug[att.event.slug] = att.event;
+    player[4].eventsBySlug[att.event.slug] = att;
   }
   for (const h2h of player[2]) {
     player[4].h2hByIdent[h2h.opponent] = h2h;
   }
-  console.log(player);
   return player;
 }
 

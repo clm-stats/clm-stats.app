@@ -146,7 +146,7 @@ class ActivePlayerIcons extends Component {
     const buffer = this.maxOffset - currMax;
     return (
       <div
-        className="absolute top-0 overflow-hidden h-full"
+        className="absolute top-0 overflow-hidden h-full pointer-events-none"
         style={{
           width: `${2 * this.maxOffset}rem`,
           left: `-${2 * this.maxOffset}rem`,
@@ -170,10 +170,12 @@ class ActivePlayerIcons extends Component {
                 "animate animate-once animate-ease-out animate-fade-left",
                 "overflow-hidden rounded-full shadow-sm",
                 "border-1 border-gray-300 dark:border-gray-700",
-                "transition transition-transform transition-translate duration-300",
+                "transition duration-300",
+                "transition-transform transition-translate",
               )}
               style={{
                 left: 0,
+                scale: ind >= 0 && currMax - ind > 4 ? "0" : "1",
                 translate: `${2 * ((ind < 0 ? currMax : ind) + buffer)}rem 0`,
               }}
             >
@@ -491,123 +493,7 @@ class PlayerSearch extends Component {
   }
 
   render() {
-    const className = cn(
-      "dropdown dropdown-end border border-gray-300 dark:border-gray-700",
-      "join-item transition-transform transition ease-in-out duration-300",
-      { "dropdown-close": this.ranks.length === 0 },
-    );
-
-    const isTranslated = this.props.isStatsOff || this.props.isStatsOn;
-    return (
-      <div
-        data-style-off={true}
-        key={this.props.isStatsPage}
-        ref={this.el}
-        onKeyDown={onKeyDown}
-        className={className}
-        style={
-          !isTranslated
-            ? {}
-            : this.props.isStatsOn
-              ? { translate: this.translatePos }
-              : { translate: this.translateNeg }
-        }
-      >
-        <label className="input h-9 border-0 px-2 rounded-r-none">
-          <span className="w-4">
-            <Icon.magnifyingGlass.s4 />
-          </span>
-          <div className="relative w-full h-full">
-            <input
-              className="relative top-0 left-0 w-full h-full opacity-0"
-              disabled={true}
-              readOnly={true}
-            />
-            <input
-              className={cn(
-                "absolute top-px left-0 w-full h-[calc(100%_-_2px)]",
-                "transition transition-colors duration-300",
-                "bg-base-100/0 focus:bg-base-100 z-80",
-              )}
-              tabIndex={0}
-              type="text"
-              placeholder="Search Players..."
-              value={this.state.input}
-              onInput={(e) =>
-                this.setState({
-                  input: e.currentTarget.value,
-                  highlightedRank: 0,
-                })
-              }
-            />
-          </div>
-          <span
-            data-class-off="scale-x-[-1]"
-            className={cn(
-              "right-0",
-              "absolute -top-px h-[calc(100%+2px)] w-36",
-              "bg-base-100 border-t-1 border-b-1",
-              "border-gray-300 dark:border-gray-700",
-              "transition transition-transform ease-in-out duration-300",
-              "origin-right scale-x-0",
-              { "scale-x-[-1]": this.props.isStatsOff },
-            )}
-          />
-        </label>
-        <div
-          className={cn(
-            "dropdown-content max-h-80 overflow-y-scroll",
-            "w-full shadow-sm bg-base-200 rounded-box z-30 p-0",
-            "min-w-50 right-[50%] transform-[translateX(50%)]",
-          )}
-        >
-          <ul tabIndex={-1} className={cn("relative w-full menu")}>
-            {this.ranks.slice(0, 50).map((rank, rankInd) => (
-              <li className="w-full" key={rank.playerIdent}>
-                <a
-                  data-pident={rank.playerIdent}
-                  data-is-highlighted={this.highlightedRank === rankInd}
-                  className={menuCn(
-                    this.highlightedRank === rankInd,
-                    "w-full px-1 flex items-center gap-1",
-                  )}
-                  href={this.props.genUrl({
-                    ...(this.props.isStatsPage ? { page: "players" } : {}),
-                    pids: this.props.togglePid(rank.player.id, "players"),
-                  })}
-                  onMouseOver={() =>
-                    this.setState({ highlightedRank: rankInd })
-                  }
-                >
-                  <div className="h-5 w-5 rounded-full overflow-hidden inline-block">
-                    <ProfileImage
-                      src={rank.player.image}
-                      className={cn("object-cover w-full h-full")}
-                      loading="lazy"
-                      alt="start.gg profile image"
-                    />
-                  </div>
-                  <div className="w-1" />
-                  <span
-                    className={cn(
-                      "flex-1 overflow-hidden text-ellipsis whitespace-nowrap",
-                      { "opacity-67 italic": rank.isFiltered },
-                    )}
-                  >
-                    {rank.player.name}
-                  </span>
-                  {!rank.isActiveOnPage ? null : FIcons.isActiveOnPage()}
-                  {rank.inRegion ? null : FIcons.inRegion()}
-                  {rank.doesMeetActivity ? null : FIcons.doesMeetActivity()}
-                  {!rank.isOutOfPeriod ? null : FIcons.inPeriod()}
-                  <span className="w-[1px]" />
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    );
+    return null;
   }
 }
 
@@ -624,14 +510,20 @@ class PlayerSearch2 extends PlayerSearch {
   }
 
   render() {
-    const { isStatsPage, page } = this.props;
+    const { isStatsPage, page, outsideNav, dropdownStart, dropdownTop, pids } =
+      this.props;
+    const pidSet = new Set(pids);
 
     const getPlayerHref = ({ isOutOfPeriod, latestPeriodId, player }) => {
       const targetPage = this.props.isStatsPage ? "players" : page;
+      const pids = this.props.togglePid(player.id, targetPage);
+      const skip =
+        pids.length === 1 && targetPage === "compare" && this.props.skipOn1;
       return this.props.genUrl({
         page: targetPage,
-        pids: this.props.togglePid(player.id, targetPage),
+        pids,
         periodId: isOutOfPeriod ? latestPeriodId : this.props.periodId,
+        skip,
       });
     };
 
@@ -658,7 +550,14 @@ class PlayerSearch2 extends PlayerSearch {
     };
 
     return (
-      <div ref={this.el} className="dropdown" onKeyDown={onKeyDown}>
+      <div
+        ref={this.el}
+        className={cn("dropdown", {
+          "dropdown-end": !dropdownStart,
+          "dropdown-top": dropdownTop,
+        })}
+        onKeyDown={onKeyDown}
+      >
         <label
           className={cn(
             "group input h-9 border-0 px-2 rounded-none",
@@ -723,51 +622,67 @@ class PlayerSearch2 extends PlayerSearch {
         </label>
         <div
           className={cn(
-            "dropdown-content max-h-80 overflow-y-scroll -left-6",
-            "w-full shadow-sm bg-base-200 rounded-box z-30 p-0 min-w-70",
+            "dropdown-content max-h-80 overflow-y-scroll",
+            dropdownStart
+              ? outsideNav
+                ? "left-2"
+                : "-left-12"
+              : outsideNav
+                ? "right-2"
+                : "-right-12",
+            "w-full shadow-sm bg-base-200 rounded-box z-300 p-0 min-w-70",
           )}
         >
           <ul tabIndex={-1} className={cn("relative w-full menu")}>
-            {this.ranks.slice(0, 50).map((rank, rankInd) => (
-              <li className="w-full" key={rank.playerIdent}>
-                <a
-                  data-pident={rank.playerIdent}
-                  data-is-highlighted={this.highlightedRank === rankInd}
-                  className={menuCn(
-                    this.highlightedRank === rankInd,
-                    "w-full px-1 flex items-center gap-1",
-                  )}
-                  onMouseDown={() => setTimeout(() => this.blur(), 0)}
-                  href={getPlayerHref(rank)}
-                  onMouseOver={() =>
-                    this.setState({ highlightedRank: rankInd })
-                  }
-                >
-                  <div className="h-5 w-5 rounded-full overflow-hidden inline-block">
-                    <ProfileImage
-                      src={rank.player.image}
-                      className={cn("object-cover w-full h-full")}
-                      loading="lazy"
-                      alt="start.gg profile image"
-                    />
-                  </div>
-                  <div className="w-1" />
-                  <span
-                    className={cn(
-                      "flex-1 overflow-hidden text-ellipsis whitespace-nowrap",
-                      { "opacity-67 italic": rank.isFiltered },
+            {this.ranks
+              .slice(0, 50)
+              .map((rank, rankInd) => [rank, rankInd])
+              .filter(([rank]) => !outsideNav || !rank.isOutOfPeriod)
+              .filter(
+                ([rank]) =>
+                  !outsideNav ||
+                  !pidSet.has(`${rank.player ? rank.player.clmId : ""}`),
+              )
+              .map(([rank, rankInd]) => (
+                <li className="w-full" key={rank.playerIdent}>
+                  <a
+                    data-pident={rank.playerIdent}
+                    data-is-highlighted={this.highlightedRank === rankInd}
+                    className={menuCn(
+                      this.highlightedRank === rankInd,
+                      "w-full px-1 flex items-center gap-1",
                     )}
+                    onMouseDown={() => setTimeout(() => this.blur(), 0)}
+                    href={getPlayerHref(rank)}
+                    onMouseOver={() =>
+                      this.setState({ highlightedRank: rankInd })
+                    }
                   >
-                    {rank.player.name}
-                  </span>
-                  {!rank.isActiveOnPage ? null : FIcons.isActiveOnPage()}
-                  {rank.inRegion ? null : FIcons.inRegion()}
-                  {rank.doesMeetActivity ? null : FIcons.doesMeetActivity()}
-                  {!rank.isOutOfPeriod ? null : FIcons.inPeriod()}
-                  <span className="w-[1px]" />
-                </a>
-              </li>
-            ))}
+                    <div className="h-5 w-5 rounded-full overflow-hidden inline-block">
+                      <ProfileImage
+                        src={rank.player.image}
+                        className={cn("object-cover w-full h-full")}
+                        loading="lazy"
+                        alt="start.gg profile image"
+                      />
+                    </div>
+                    <div className="w-1" />
+                    <span
+                      className={cn(
+                        "flex-1 overflow-hidden text-ellipsis whitespace-nowrap",
+                        { "opacity-67 italic": rank.isFiltered },
+                      )}
+                    >
+                      {rank.player.name}
+                    </span>
+                    {!rank.isActiveOnPage ? null : FIcons.isActiveOnPage()}
+                    {rank.inRegion ? null : FIcons.inRegion()}
+                    {rank.doesMeetActivity ? null : FIcons.doesMeetActivity()}
+                    {!rank.isOutOfPeriod ? null : FIcons.inPeriod()}
+                    <span className="w-[1px]" />
+                  </a>
+                </li>
+              ))}
           </ul>
         </div>
       </div>
@@ -1409,6 +1324,7 @@ export default function PureApp(props) {
       sort,
       tab,
       rating,
+      skip,
       ...overrides,
     };
     P.sort = U.resolveSort(P.sort);
@@ -1422,21 +1338,16 @@ export default function PureApp(props) {
     if (P.page === "compare") {
       P.pids = P.pids.slice(0, 2);
     }
-    if (P.page === "players" && !P.pids.length) {
-      P.page = "stats";
-    }
     P.tab = U.resolveTab(P.page, P.tab);
     const qs = U.mkQs(
       P.sort,
-      P.page === "stats"
-        ? U.asSearchParams(P.filter, P.periodId)
-        : P.page === "players"
-          ? {}
-          : { pids: P.pids },
+      P.page === "stats" ? U.asSearchParams(P.filter, P.periodId) : {},
       P.tab === U.resolveTab(P.page) ? {} : { tab: P.tab },
+      P.skip ? { skip: "1" } : {},
       P.rating === "alt1" ? { rating: P.rating } : {},
     );
-    const hash = P.page === "players" ? `#${P.pids[0]}` : "";
+    const hash =
+      P.page !== "stats" && P.pids.length ? `#${P.pids.join("~")}` : "";
 
     const longPath = `${U.getSeason(P.periodId)}/${P.page}`;
     const path =
@@ -1455,10 +1366,10 @@ export default function PureApp(props) {
         </a>
       </li>
     );
-    // {liEl("players", <Icon.user />, "Players")} // PERMANENT I THINK
     return (
       <ul tabIndex={-1} className={cn("menu", ulCn)}>
         {liEl("stats", <Icon.chartColumn />, "Stats")}
+        {liEl("players", <Icon.user />, "Players")}
         {liEl("compare", <Icon.userGroup />, "Compare")}
         {liEl("h2h", <Icon.tableCells />, "H2H")}
       </ul>
@@ -1732,18 +1643,30 @@ export default function PureApp(props) {
     );
   }
 
-  function playerStat(title, value, warningDesc) {
+  function playerStat(breakMid, title, value, warningDesc) {
+    const bkTextLeft = breakMid ? "md:text-left" : "lg:text-left";
+    const bkPb0 = breakMid ? "md:pb-0" : "lg:pb-0";
+    const bkBorderB0 = breakMid ? "md:border-b-0" : "lg:border-b-0";
+    const bkBorderB1 = breakMid ? "md:border-b-1" : "lg:border-b-1";
+    const bkJustifyStart = breakMid ? "md:justify-start" : "lg:justify-start";
+    const bkH12 = breakMid ? "md:h-12" : "lg:h-12";
+    const bkText2Rem = breakMid ? "md:text-[2rem]" : "lg:text-[2rem]";
     const className = cn(
       "stat px-2 border-gray-300 dark:border-gray-700",
-      "border-r-0 border-b-0 lg:border-b-1 last:border-b-0",
+      "border-r-0 border-b-0",
+      bkBorderB1,
+      "last:border-b-0",
     );
     return (
       <div className={className}>
         <div
           className={cn(
             mkAnimateInCn(!isInitialPid),
-            "text-center lg:text-left stat-title text-lg pb-1 lg:pb-0",
-            "border-b-3 lg:border-b-0 border-gray-300 dark:border-gray-700",
+            "text-center stat-title text-lg pb-1",
+            "border-b-3 border-gray-300 dark:border-gray-700",
+            bkTextLeft,
+            bkPb0,
+            bkBorderB0,
           )}
         >
           {title}
@@ -1751,8 +1674,11 @@ export default function PureApp(props) {
         <div
           className={cn(
             mkAnimateInCn(!isInitialPid),
-            "justify-center lg:justify-start stat-value flex items-center ",
-            "h-8 lg:h-12 text-2xl lg:text-[2rem]",
+            "justify-center stat-value flex items-center ",
+            "h-8 text-2xl",
+            bkJustifyStart,
+            bkH12,
+            bkText2Rem,
           )}
         >
           {value}
@@ -1778,7 +1704,9 @@ export default function PureApp(props) {
     );
   }
 
-  function purePlayersPage(args) {
+  function playerStats(args) {
+    const breakMid = args.breakMid;
+    const spPadCn = breakMid ? "md:hidden" : "lg:hidden";
     function spPad(txt, num = 1) {
       let __html = "";
       for (let i = 0; i < num; i++) {
@@ -1786,55 +1714,86 @@ export default function PureApp(props) {
       }
       return (
         <span>
-          <span className="lg:hidden" dangerouslySetInnerHTML={{ __html }} />
+          <span className={spPadCn} dangerouslySetInnerHTML={{ __html }} />
           {txt}
-          <span className="lg:hidden" dangerouslySetInnerHTML={{ __html }} />
+          <span className={spPadCn} dangerouslySetInnerHTML={{ __html }} />
         </span>
       );
     }
-    const stats = (
+    return (
       <>
-        {playerStat(spPad("Current Rank", 2), args.ord || "-", args.ordDesc)}
-        {playerStat(spPad("Rating"), args.qual || "-")}
-        {playerStat(spPad("Win - Loss", 3), args.acc || "-")}
-        {playerStat("Events", args.att || "-")}
-        {/* playerStat("PR Wins", args.prWins || "-") */ null}
-        {/* playerStat(`${prevTitle} Rank`, args.prLast || '-') */ null}
+        {playerStat(
+          breakMid,
+          spPad("Current Rank", 2),
+          args.ord || "-",
+          args.ordDesc,
+        )}
+        {playerStat(breakMid, spPad("Rating"), args.qual || "-")}
+        {playerStat(breakMid, spPad("Win - Loss", 3), args.acc || "-")}
+        {playerStat(breakMid, "Events", args.att || "-")}
+        {/* playerStat(breakMid, "PR Wins", args.prWins || "-") */ null}
+        {
+          /* playerStat(breakMid, `${prevTitle} Rank`, args.prLast || '-') */ null
+        }
       </>
     );
+  }
+
+  function playerHeader(args, { forceAnimateIn, reverseRow } = {}) {
+    return (
+      <div
+        className={cn(mkAnimateInCn(forceAnimateIn), "flex relative z-10", {
+          "flex-row-reverse": reverseRow,
+        })}
+      >
+        <div className="w-2 lg:w-8" />
+        <div
+          className={cn(
+            "h-23 w-23 lg:h-28 lg:w-28 overflow-hidden shadow-lg rounded-full",
+            "border-2 border-gray-400 dark:border-gray-600",
+          )}
+        >
+          {args.profileImage}
+        </div>
+        <div className="w-4 lg:w-4" />
+        <div className="flex-1 relative flex flex-col items-stretch pt-2 lg:pt-5">
+          <div
+            className={cn(
+              "h-9 lg:h-12 text-3xl lg:text-4xl font-bold relative",
+            )}
+          >
+            <div
+              className={cn("absolute top-0 left-0 h-full w-full", {
+                "text-end": reverseRow,
+              })}
+            >
+              {args.tag}
+            </div>
+          </div>
+          <div className={cn("text-xl h-7 relative")}>
+            <div
+              className={cn(
+                "absolute top-0 left-0 h-full w-full whitespace-nowrap",
+                "overflow-hidden text-ellipsis",
+                { "text-end": reverseRow },
+              )}
+            >
+              {args.realName}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function purePlayersPage(args) {
+    const stats = playerStats(args);
     return (
       <div
         key={args.playerKey}
         className="flex-1 flex flex-col p-4 overflow-visible"
       >
-        <div className={cn(mkAnimateInCn(!isInitialPid), "flex")}>
-          <div className="w-2 lg:w-8" />
-          <div
-            className={cn(
-              "h-23 w-23 lg:h-34 lg:w-34 overflow-hidden shadow-lg rounded-full",
-              "border-2 border-gray-400 dark:border-gray-600",
-            )}
-          >
-            {args.profileImage}
-          </div>
-          <div className="w-4 lg:w-8" />
-          <div className="flex-1 relative flex flex-col items-stretch pt-2 lg:pt-5">
-            <div
-              className={cn(
-                "h-9 lg:h-16 text-3xl lg:text-5xl font-bold relative",
-              )}
-            >
-              <div className="absolute top-0 left-0 h-full w-full whitespace-nowrap overflow-hidden text-ellipsis">
-                {args.tag}
-              </div>
-            </div>
-            <div className={cn("text-xl h-7 lg:h-8 lg:text-2xl relative")}>
-              <div className="absolute top-0 left-0 h-full w-full whitespace-nowrap overflow-hidden text-ellipsis">
-                {args.realName}
-              </div>
-            </div>
-          </div>
-        </div>
+        {playerHeader(args, { forceAnimateIn: !isInitialPid })}
         <div className="h-1 lg:h-4" />
         <div className="stats flex lg:hidden gap-4 mb-2">{stats}</div>
         <div className="h-0 w-full border-b-1 border-gray-300 dark:border-gray-700" />
@@ -1877,47 +1836,53 @@ export default function PureApp(props) {
     );
   }
 
-  function playersPage() {
-    const player = getPlayer(0);
-    const playerKey = pids[0];
-    const tourneys = [...((player || {}).tourneys || [])];
-    tourneys.reverse();
-    const eventsByTourneySlug = {};
-    const tourneysBySlug = {};
-    const getTourneySlug = ({ event }) => event.slug.split("/event/")[0];
-    for (const tourney of tourneys) {
-      const slug = getTourneySlug(tourney);
-      const { tournamentName, prIneligible, date, imageUrl } = tourney.event;
-      tourneysBySlug[slug] ||= {
-        slug,
-        tournamentName,
-        date,
-        imageUrl,
-        numWins: 0,
-        numLosses: 0,
+  function playerPageArgs(
+    player,
+    fallbackPlayerKey,
+    breakMid,
+    emptyEl,
+    removedHref,
+    reverseRow,
+  ) {
+    if (!player && emptyEl) {
+      return {
+        playerKey: fallbackPlayerKey || "noKeyWithEl",
+        profileImage: (
+          <ProfileImage
+            src={defaultProfileImage}
+            className={cn("object-cover w-full h-full")}
+            loading="lazy"
+            alt="no user selected"
+          />
+        ),
+        tag: (
+          <div
+            className={cn(
+              "border-2 border-gray-300 dark:border-gray-700",
+              "p-px pt-0 flex flex-col items-stretch max-w-80",
+            )}
+          >
+            {emptyEl}
+          </div>
+        ),
+        realName: removedHref ? (
+          ""
+        ) : (
+          <span className="ml-4 text-sm whitespace-nowrap opacity-67 italic">
+            -- no player selected --
+          </span>
+        ),
+        ord: "-",
+        qual: "-",
+        acc: "-",
+        prWins: "-",
+        att: "-",
+        breakMid,
       };
-      tourneysBySlug[slug].numWins += tourney.numWins;
-      tourneysBySlug[slug].numLosses += tourney.numLosses;
-      tourneysBySlug[slug].prIneligible &&= prIneligible;
-      eventsByTourneySlug[slug] ||= [];
-      eventsByTourneySlug[slug].push(tourney);
     }
-    const usedTourneySlugs = new Set([]);
-    const tourneyEvents = [];
-    for (const tourney of tourneys) {
-      const slug = getTourneySlug(tourney);
-      if (usedTourneySlugs.has(slug)) {
-        continue;
-      }
-      usedTourneySlugs.add(slug);
-      tourneyEvents.push({
-        tourney: tourneysBySlug[slug],
-        eventViews: eventsByTourneySlug[slug],
-      });
-    }
-    if (isLoading || !player) {
-      return purePlayersPage({
-        playerKey,
+    if (!player) {
+      return {
+        playerKey: fallbackPlayerKey || "noKey",
         profileImage: <div className="skeleton h-full w-full" />,
         tag: (
           <div className="skeleton relative top-1 h-[calc(100%_-_0.5rem)] w-50 lg:w-80" />
@@ -1930,17 +1895,14 @@ export default function PureApp(props) {
         acc: <div className="skeleton h-5 lg:h-10 w-22" />,
         prWins: <div className="skeleton h-5 lg:h-10 w-11" />,
         att: <div className="skeleton h-5 lg:h-10 w-12" />,
-      });
+        breakMid,
+      };
     }
-    function canShowH2h(h2h) {
-      const player = players[h2h.opponent];
-      return Boolean(player && canShow(player.rank));
-    }
-    const otherIdents = (player && player.otherIdents) || [];
+    const otherIdents = player.otherIdents || [];
     const allIdents = [...otherIdents, player.name];
     const extraIdents = allIdents.filter((ident) => ident !== player.tag);
-    return purePlayersPage({
-      playerKey,
+    return {
+      playerKey: player.clmId,
       profileImage: (
         <ProfileImage
           src={player.image}
@@ -1950,14 +1912,43 @@ export default function PureApp(props) {
         />
       ),
       tag: (
-        <span>
-          {!player.prefix ? null : (
-            <span className="opacity-67">
-              {player.prefix}
-              &nbsp;
-            </span>
+        <span
+          className={cn("flex flex-row min-w-0 items-center gap-1", {
+            "flex-row-reverse": reverseRow,
+          })}
+        >
+          {!removedHref ? null : (
+            <div
+              className={cn("flex-1 flex flex-row items-center", {
+                "flex-row-reverse": reverseRow,
+              })}
+            >
+              <div className="flex-1" />
+              <a
+                href={removedHref}
+                className={cn("btn btn-sm btn-error h-5 px-1 mb-2")}
+              >
+                x
+              </a>
+            </div>
           )}
-          {player.tag}
+          <span className="flex flex-row min-w-0 items-center">
+            {!player.prefix ? null : (
+              <span
+                key="prefix"
+                className="basis-auto grow-[0.25] shrink inline min-w-0 whitespace-nowrap overflow-hidden text-ellipsis text-xl lg:text-3xl opacity-67"
+              >
+                {player.prefix}
+                &nbsp;
+              </span>
+            )}
+            <span
+              key="gamerTag"
+              className="basis-auto grow-1 shrink-[0.25] inline min-w-0 whitespace-nowrap overflow-hidden text-ellipsis"
+            >
+              {player.tag}
+            </span>
+          </span>
         </span>
       ),
       ord: canShow(player.rank)
@@ -2001,6 +1992,85 @@ export default function PureApp(props) {
           )}
         </span>
       ),
+      breakMid,
+    };
+  }
+
+  function playersPage() {
+    const player = getPlayer(0);
+    const playerKey = pids[0];
+    const tourneys = [...((player || {}).tourneys || [])];
+    tourneys.reverse();
+    const eventsByTourneySlug = {};
+    const tourneysBySlug = {};
+    const getTourneySlug = ({ event }) => event.slug.split("/event/")[0];
+    for (const tourney of tourneys) {
+      const slug = getTourneySlug(tourney);
+      const { tournamentName, prIneligible, date, imageUrl } = tourney.event;
+      tourneysBySlug[slug] ||= {
+        slug,
+        tournamentName,
+        date,
+        imageUrl,
+        numWins: 0,
+        numLosses: 0,
+      };
+      tourneysBySlug[slug].numWins += tourney.numWins;
+      tourneysBySlug[slug].numLosses += tourney.numLosses;
+      tourneysBySlug[slug].prIneligible &&= prIneligible;
+      eventsByTourneySlug[slug] ||= [];
+      eventsByTourneySlug[slug].push(tourney);
+    }
+    const usedTourneySlugs = new Set([]);
+    const tourneyEvents = [];
+    for (const tourney of tourneys) {
+      const slug = getTourneySlug(tourney);
+      if (usedTourneySlugs.has(slug)) {
+        continue;
+      }
+      usedTourneySlugs.add(slug);
+      tourneyEvents.push({
+        tourney: tourneysBySlug[slug],
+        eventViews: eventsByTourneySlug[slug],
+      });
+    }
+    if (!isLoading && !pids[0]) {
+      return purePlayersPage(
+        playerPageArgs(
+          undefined,
+          "empty-player-page",
+          false,
+          <PlayerSearch2
+            periodId={periodId}
+            setUrl={setUrl}
+            pids={pids}
+            pidsKey={pidsKey}
+            genUrl={genUrl}
+            togglePid={togglePid}
+            isStatsOn={
+              !isInitialPage && page === "stats" && prevPage !== "stats"
+            }
+            isStatsOff={
+              !isInitialPage && page !== "stats" && prevPage === "stats"
+            }
+            page={page}
+            isStatsPage={isStatsPage}
+            fuzzyFiltered={fuzzyFiltered}
+            outsideNav={true}
+            dropdownStart={true}
+          />,
+        ),
+      );
+    }
+    if (isLoading || !player) {
+      return purePlayersPage({ ...playerPageArgs(undefined, playerKey) });
+    }
+    function canShowH2h(h2h) {
+      const player = players[h2h.opponent];
+      return Boolean(player && canShow(player.rank));
+    }
+    return purePlayersPage({
+      ...playerPageArgs(player),
       body:
         tab === "h2hs" ? (
           <ul className="flex flex-col gap-3">
@@ -2215,18 +2285,127 @@ export default function PureApp(props) {
   }
 
   function comparePage() {
-    const pL = skip ? null : getPlayer(0);
-    const pR = getPlayer(skip ? 0 : 1);
-    console.log({ pL, pR });
+    const lInd = 0;
+    const rInd = skip ? 0 : 1;
+    const pL = skip ? null : getPlayer(lInd);
+    const pR = getPlayer(rInd);
+    const lPid = skip ? null : pids[lInd];
+    const rPid = pids[rInd];
+
+    const mkTurnOnPid = (isSkip) =>
+      function (_pid, targetPage = page) {
+        const pid = typeof _pid === "string" ? _pid : `${_pid}`;
+        return isSkip ? [...pids.slice(0, 1), pid] : [pid, ...pids];
+      };
+    const argsL = playerPageArgs(
+      pL,
+      "compare-left",
+      true,
+      <PlayerSearch2
+        periodId={periodId}
+        setUrl={setUrl}
+        pids={pids}
+        pidsKey={pidsKey}
+        genUrl={genUrl}
+        togglePid={mkTurnOnPid()}
+        skipOn1={false}
+        isStatsOn={!isInitialPage && page === "stats" && prevPage !== "stats"}
+        isStatsOff={!isInitialPage && page !== "stats" && prevPage === "stats"}
+        page={page}
+        isStatsPage={isStatsPage}
+        fuzzyFiltered={fuzzyFiltered}
+        outsideNav={true}
+        dropdownStart={true}
+      />,
+      !pL
+        ? undefined
+        : genUrl(pR ? { pids: [rPid], skip: true } : { pids: [], skip: false }),
+    );
+    const argsR = playerPageArgs(
+      pR,
+      "compare-right",
+      true,
+      <PlayerSearch2
+        periodId={periodId}
+        setUrl={setUrl}
+        pids={pids}
+        pidsKey={pidsKey}
+        genUrl={genUrl}
+        togglePid={mkTurnOnPid(true)}
+        skipOn1={false}
+        isStatsOn={!isInitialPage && page === "stats" && prevPage !== "stats"}
+        isStatsOff={!isInitialPage && page !== "stats" && prevPage === "stats"}
+        page={page}
+        isStatsPage={isStatsPage}
+        fuzzyFiltered={fuzzyFiltered}
+        outsideNav={true}
+      />,
+      !pR ? undefined : genUrl({ pids: pL ? [lPid] : [], skip: false }),
+      true,
+    );
     return (
       <div className="flex flex-col">
-        <div className="flex flex-row">
-          <div>player 1</div>
-          <div>player 2</div>
+        <div
+          className={cn(
+            "flex flex-row relative items-center px-4 z-10",
+            "border-b-1 border-gray-300 dark:border-gray-700",
+          )}
+        >
+          <div className="flex-1 h-44 relative">
+            <div className="absolute left-0 top-0 h-full w-full flex flex-col items-stretch justify-center">
+              <div key={`pidL:${lPid}`}>
+                {playerHeader(argsL, {
+                  reverseRow: true,
+                  forceAnimateIn: true,
+                })}
+              </div>
+            </div>
+          </div>
+          <div className="w-0 md:w-32" />
+          <div
+            className={cn(
+              "absolute w-full h-full top-12 md:top-0 left-0",
+              "flex flex-col items-center justify-center pointer-events-none",
+            )}
+          >
+            <div
+              className={cn(
+                "text-2xl md:text-5xl font-bold text-center",
+                "w-[67%] md:w-auto -pt-8 md:pt-4 pb-0 md:pb-4 px-4 mx-4",
+                "border-l-8 border-r-8 border-l-accent border-r-secondary",
+              )}
+            >
+              VS
+            </div>
+          </div>
+          <div className="flex-1 h-44 relative">
+            <div className="absolute left-0 top-0 h-full w-full flex flex-col items-stretch justify-center">
+              <div key={`pidR:${rPid}`}>
+                {playerHeader(argsR, { forceAnimateIn: true })}
+              </div>
+            </div>
+          </div>
         </div>
         <div className="flex flex-row">
-          <div className="hidden md:block w-50">p1</div>
-          <div className="flex flex-col flex-1 items-stretch min-w-60">
+          <div className="hidden md:block w-50">
+            <div
+              key={`lStateSide:${lPid}`}
+              className={cn(
+                mkAnimateInCn(true),
+                "stats hidden md:flex flex-col w-50 overflow-visible",
+                "border-r-1 border-gray-300 dark:border-gray-700 rounded-none",
+              )}
+            >
+              {playerStats(argsL)}
+            </div>
+          </div>
+          <div
+            key={pL && pR ? `${lPid}|${rPid}` : "||"}
+            className={cn(
+              mkAnimateInCn(true),
+              "flex flex-col flex-1 items-stretch min-w-60 p-4",
+            )}
+          >
             {(() => {
               if (!pL || !pR) {
                 return "Select two valid players above.";
@@ -2251,12 +2430,15 @@ export default function PureApp(props) {
                   "same tournaments during this season.",
                 ].join(" ");
               }
-              console.log({ h2hs, sharedEvents });
               return (
                 <div className="flex flex-col items-stretch">
                   {(() => {
-                    if (h2hs.length === 0) {
-                      return null;
+                    if (!h2hs || h2hs.sets.length === 0) {
+                      const message = [
+                        `${lIdent} and ${rIdent} did not play each other`,
+                        "during this season.",
+                      ].join(" ");
+                      return <div className="mb-4">{message}</div>;
                     }
                     let lSetWins = 0;
                     let lGameWins = 0;
@@ -2284,7 +2466,6 @@ export default function PureApp(props) {
                       lGameWins += lGames;
                       totalGames += lGames + rGames;
                     }
-                    console.log({ lSetWins, lGameWins, totalSets, totalGames });
                     return (
                       <>
                         <div
@@ -2395,7 +2576,7 @@ export default function PureApp(props) {
                                   </div>
                                   <div
                                     className={cn(
-                                      "text-sm/4 opacity-67 overflow-hidden",
+                                      "text-sm/5 opacity-67 overflow-hidden",
                                       "whitespace-nowrap text-ellipsis",
                                     )}
                                   >
@@ -2424,18 +2605,347 @@ export default function PureApp(props) {
                   <h3 className="font-bold text-3xl flex justify-center">
                     Tournaments
                   </h3>
+                  {sharedEvents.map(({ l, r }, eventInd) => {
+                    function toPlacement({ placingString }) {
+                      let numPart = "";
+                      for (const digitStr of (placingString || "").split("")) {
+                        const digit = parseInt(digitStr);
+                        if (Number.isNaN(digit)) {
+                          break;
+                        }
+                        numPart += digitStr;
+                      }
+                      const num = parseInt(numPart);
+                      return Number.isNaN(num) ? Infinity : num;
+                    }
+                    const lPlacement = toPlacement(l);
+                    const rPlacement = toPlacement(r);
+                    const minPlacing = Math.min(lPlacement, rPlacement);
+                    const lBest = lPlacement === minPlacing;
+                    const rBest = rPlacement === minPlacing;
+                    return (
+                      <div
+                        key={eventInd}
+                        className={cn(
+                          "flex flex-row items-stretch my-2",
+                          "rounded-3xl bg-base-300 shadow-md",
+                          "overflow-hidden min-w-0",
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "w-6",
+                            lBest ? "bg-accent" : "bg-accent/30",
+                          )}
+                        />
+                        <div className="flex-1 flex flex-row items-center min-w-0 py-2">
+                          <div className="flex flex-row text-3xl w-36 justify-center items-end py-1">
+                            <span className="font-bold">{l.placingString}</span>
+                            <div className="text-xl opacity-67">
+                              /{l.event.numEntrants}
+                            </div>
+                          </div>
+                          <a
+                            href={`https://start.gg/${l.event.slug}`}
+                            target="_blank"
+                            className={cn(
+                              "flex-1 inline text-center text-sm font-bold ",
+                              "hover:underline hover:text-primary text-balance",
+                            )}
+                          >
+                            {l.event.tournamentName}
+                          </a>
+                          <div className="flex flex-row text-3xl w-36 justify-center items-end">
+                            <span className="font-bold">{r.placingString}</span>
+                            <div className="text-xl opacity-67">
+                              /{l.event.numEntrants}
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          className={cn(
+                            "w-6",
+                            rBest ? "bg-secondary" : "bg-secondary/30",
+                          )}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               );
             })()}
+
+            <div className={cn("md:hidden h-4", { hidden: !pL && !pR })} />
+            <div
+              className={cn(
+                "stats flex md:hidden gap-4 my-2",
+                "border-t-1 border-b-1 border-t-gray-300 dark:border-t-gray-700",
+                "border-b-gray-300 dark:border-b-gray-700",
+                "border-l-4 border-r-4 border-l-accent border-r-accent",
+                { hidden: !pL },
+              )}
+            >
+              {playerStats(argsL)}
+            </div>
+            <div
+              className={cn(
+                "stats flex md:hidden gap-4 my-2",
+                "border-t-1 border-b-1 border-t-gray-300 dark:border-t-gray-700",
+                "border-b-gray-300 dark:border-b-gray-700",
+                "border-l-4 border-r-4 border-l-secondary border-r-secondary",
+                { hidden: !pR },
+              )}
+            >
+              {playerStats(argsR)}
+            </div>
           </div>
-          <div className="hidden md:block w-50">p1</div>
+          <div className="hidden md:block w-50">
+            <div
+              className={cn(
+                "stats hidden md:flex flex-col w-50 overflow-visible",
+                "border-l-1 border-gray-300 dark:border-gray-700 rounded-none",
+              )}
+            >
+              {playerStats(argsR)}
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
+  const h2hDims = { w: "w-18", h: "h-12" };
+
   function h2hPage() {
-    return <div>h2hPage</div>;
+    const playerData = pids.map((pid, pidInd) => {
+      return { pid, pidInd, player: getPlayer(pidInd) };
+    });
+    console.log(playerData);
+
+    function renderHead(g, isRight = false) {
+      return (
+        <a
+          key={`${isRight ? "r" : "l"}Label:${g.pid}`}
+          href={genUrl({
+            pids: pids.filter((_, pidInd) => pidInd !== g.pidInd),
+          })}
+          className={cn(
+            h2hDims.w,
+            "bg-info/5 flex flex-row items-center justify-start",
+            "transition transition-colors duration-300",
+            "cursor-pointer group p-1 inset-shadow-sm",
+            "hover:bg-error/50",
+            "overflow-hidden hover:overflow-visible",
+          )}
+        >
+          <div className="relative p-2">
+            <div
+              className={cn(
+                "transition transition-opacity transition-colors duration-300",
+                "absolute top-0 left-0 w-full h-full rounded-full",
+                "border-1 border-warning-content shadow-md bg-warning",
+                "opacity-0 group-hover:opacity-100",
+              )}
+            ></div>
+            <div
+              className={cn(
+                "transition transition-colors duration-300",
+                "group-hover:text-warning-content relative",
+              )}
+            >
+              {g.player ? g.player.name : <div className="skeleton h-4 w-12" />}
+            </div>
+          </div>
+        </a>
+      );
+    }
+
+    function renderCell(l, r) {
+      const key = `h2hCell:${l.pidInd}:${r.pidInd}`;
+      if (l.pidInd === r.pidInd) {
+        return (
+          <div
+            key={key}
+            className={cn(h2hDims.w, "bg-gray-700 dark:bg-gray-300")}
+          />
+        );
+      }
+      if (!l.player || !r.player) {
+        return (
+          <div
+            key={key}
+            className={cn(h2hDims.w, "bg-gray-700/25 dark:bg-gray-300/25")}
+          />
+        );
+      }
+      const h2hs = l.player.h2hByIdent[r.player.rank.playerIdent] || {
+        sets: [],
+      };
+      console.log(h2hs);
+      const validSets = h2hs.sets.filter(
+        (s) => !s.setInfo.dq && !s.setInfo.prIneligible,
+      );
+      const wins = validSets.filter((s) => s.setInfo.won).length;
+      const total = validSets.length;
+      const ratio = total && wins / total;
+      const bgCn = (() => {
+        if (total === 0) {
+          return "bg-gray-700/10 dark:bg-gray-300/10";
+        } else if (wins * 2 === total) {
+          return "bg-gray-700/50 dark:bg-gray-300/50";
+        } else if (ratio > 0.66 && total > 2) {
+          return "bg-success/50";
+        } else if (ratio > 0.5) {
+          return "bg-success/20";
+        } else if (ratio > 0.33 || total <= 2) {
+          return "bg-error/20";
+        } else {
+          return "bg-error/50";
+        }
+      })();
+      return (
+        <div
+          key={key}
+          className={cn(
+            h2hDims.w,
+            "flex items-center justify-center font-bold",
+            bgCn,
+          )}
+        >
+          {wins} - {total - wins}
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col items-stretch max-w-full min-h-92 max-h-[calc(100vh_-_4rem)] overflow-scroll justify-between">
+        <div className="sticky left-px top-0">
+          <div className="p-4 flex flex-col gap-2">
+            <div className="content">
+              <p>
+                Create your own H2H Matrix for the Current PR Period. Type a tag
+                in the box below to add a player or click on a player to remove.
+              </p>
+              <br />
+              <p>
+                I recommend using this on desktop, especially if you want to
+                compare a large number of players.
+              </p>
+            </div>
+            <div className="flex flex-row gap-2">
+              <a href="/" className="btn btn-soft btn-info">
+                Top 5
+              </a>
+              <a href="/" className="btn btn-soft btn-info">
+                Top 10
+              </a>
+              <a href="/" className="btn btn-soft btn-info">
+                PR Candidates
+              </a>
+              <a href="/" className="btn btn-soft btn-info">
+                Surprise Me!
+              </a>
+              <a href="/" className="btn btn-soft btn-info">
+                Reset
+              </a>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-stretch p-2">
+          <div className={cn("flex-1 flex flex-col gap-1")}>
+            <div
+              key={`lLabel`}
+              className={cn(h2hDims.h, "flex flex-row gap-1 ml-14")}
+            >
+              <div key={`lLabel:`} className={h2hDims.w} />
+              {playerData.map(renderHead)}
+            </div>
+            {playerData.map((l) => {
+              return (
+                <div
+                  key={`l:${l.pid}`}
+                  className={cn(h2hDims.h, "h-10 flex flex-row gap-1")}
+                >
+                  <div className="flex flex-row items-stretch">
+                    <div
+                      key={`swap-btns:${l.pid}`}
+                      className="flex flex-row items-center bg-info/5 px-1"
+                    >
+                      <a
+                        href={genUrl({
+                          pids: [
+                            ...pids.slice(0, l.pidInd - 1),
+                            pids[l.pidInd],
+                            pids[l.pidInd - 1],
+                            ...pids.slice(l.pidInd + 1),
+                          ],
+                        })}
+                        className={cn(
+                          "p-1 transition transition-colors duration-300",
+                          "hover:text-primary hover:bg-warning/50",
+                          { "opacity-0 pointer-events-none": !l.pidInd },
+                        )}
+                      >
+                        <Icon.sortUp.s4 />
+                      </a>
+                      <a
+                        href={genUrl({
+                          pids: [
+                            ...pids.slice(0, l.pidInd),
+                            pids[l.pidInd + 1],
+                            pids[l.pidInd],
+                            ...pids.slice(l.pidInd + 2),
+                          ],
+                        })}
+                        className={cn(
+                          "p-1 transition transition-colors duration-300",
+                          "hover:text-primary hover:bg-warning/50",
+                          {
+                            "opacity-0 pointer-events-none":
+                              l.pidInd + 1 >= playerData.length,
+                          },
+                        )}
+                      >
+                        <Icon.sortDown.s4 />
+                      </a>
+                    </div>
+                    {renderHead(l, true)}
+                  </div>
+                  {playerData.map((r) => renderCell(l, r))}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <div
+          className={cn(
+            "sticky bottom-0 w-full max-w-80 h-10 border-2 border-gray-300",
+            "dark:bg-gray-700 bg-base-300 flex flex-col items-stretch ml-4",
+          )}
+        >
+          <PlayerSearch2
+            periodId={periodId}
+            setUrl={setUrl}
+            pids={pids}
+            pidsKey={pidsKey}
+            genUrl={genUrl}
+            togglePid={togglePid}
+            isStatsOn={
+              !isInitialPage && page === "stats" && prevPage !== "stats"
+            }
+            isStatsOff={
+              !isInitialPage && page !== "stats" && prevPage === "stats"
+            }
+            page={page}
+            isStatsPage={isStatsPage}
+            fuzzyFiltered={fuzzyFiltered}
+            outsideNav={true}
+            dropdownStart={true}
+            dropdownTop={true}
+          />
+        </div>
+      </div>
+    );
   }
 
   const PAGE_GENS = {
@@ -2504,6 +3014,7 @@ export default function PureApp(props) {
               </div>
               <a
                 href="https://chicagomelee.com/"
+                target="_blank"
                 className={cn(
                   "btn btn-ghost px-1 transition transition-transform",
                   isStatsPage ? "translate-x-0" : "translate-x-29",

@@ -16,6 +16,7 @@ let TITLE_BY_PERIOD_ID = {};
 const OUT_OF_REGION = new Set([]);
 
 export function setTimeline(newTimeline) {
+  console.log({ newTimeline });
   for (const ident of newTimeline.outOfRegionIdents || []) {
     OUT_OF_REGION.add(ident);
   }

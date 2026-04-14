@@ -2720,7 +2720,6 @@ export default function PureApp(props) {
     const playerData = pids.map((pid, pidInd) => {
       return { pid, pidInd, player: getPlayer(pidInd) };
     });
-    console.log(playerData);
 
     function renderHead(g, isRight = false) {
       return (
@@ -2781,7 +2780,6 @@ export default function PureApp(props) {
       const h2hs = l.player.h2hByIdent[r.player.rank.playerIdent] || {
         sets: [],
       };
-      console.log(h2hs);
       const validSets = h2hs.sets.filter(
         (s) => !s.setInfo.dq && !s.setInfo.prIneligible,
       );

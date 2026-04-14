@@ -1237,7 +1237,7 @@ export default function PureApp(props) {
       if (skip) {
         return [pid, ...pids];
       } else {
-        return [...pids, pid];
+        return [...pids.slice(0, 1), pid];
       }
     }
     return [...pids, pid];
@@ -1447,7 +1447,7 @@ export default function PureApp(props) {
   }
 
   function periodMenu(ulCn) {
-    const pageHref = (page) => `/${season}/${page}`;
+    const pageHref = (page) => genUrl({ page });
     const liEl = (liPage, icon, txt) => (
       <li key={liPage}>
         <a href={pageHref(liPage)} className={cn(menuCn(page === liPage))}>
@@ -2225,13 +2225,210 @@ export default function PureApp(props) {
           <div>player 2</div>
         </div>
         <div className="flex flex-row">
-          <div>p1</div>
-          <div className="flex flex-col">
-            <div>a</div>
-            <div>b</div>
-            <div>c</div>
+          <div className="hidden md:block w-50">p1</div>
+          <div className="flex flex-col flex-1 items-stretch min-w-60">
+            {(() => {
+              if (!pL || !pR) {
+                return "Select two valid players above.";
+              }
+              const lIdent = pL.rank.playerIdent;
+              const rIdent = pR.rank.playerIdent;
+              const h2hs = pL.h2hByIdent[rIdent];
+              const sharedEvents = [];
+              for (const {
+                event: { slug },
+              } of pL.tourneys) {
+                if (pR.eventsBySlug[slug]) {
+                  sharedEvents.push({
+                    l: pL.eventsBySlug[slug],
+                    r: pR.eventsBySlug[slug],
+                  });
+                }
+              }
+              if (sharedEvents.length === 0) {
+                return [
+                  `${lIdent} and ${rIdent} did not enter any of the`,
+                  "same tournaments during this season.",
+                ].join(" ");
+              }
+              console.log({ h2hs, sharedEvents });
+              return (
+                <div className="flex flex-col items-stretch">
+                  {(() => {
+                    if (h2hs.length === 0) {
+                      return null;
+                    }
+                    let lSetWins = 0;
+                    let lGameWins = 0;
+                    let totalSets = 0;
+                    let totalGames = 0;
+                    for (const set of h2hs.sets) {
+                      if (set.setInfo.won) {
+                        lSetWins++;
+                      }
+                      totalSets++;
+                      const [lGames, rGames] = (() => {
+                        const lParsed = parseInt(set.setInfo.wonGames);
+                        const rParsed = parseInt(set.setInfo.lostGames);
+                        if (!Number.isNaN(lParsed) && !Number.isNaN(rParsed)) {
+                          return [lParsed, rParsed];
+                        }
+                        if (set.setInfo.won && !Number.isNan(lParsed)) {
+                          return [lParsed, 0];
+                        }
+                        if (!set.setInfo.won && !Number.isNan(rParsed)) {
+                          return [0, rParsed];
+                        }
+                        return [0, 0];
+                      })();
+                      lGameWins += lGames;
+                      totalGames += lGames + rGames;
+                    }
+                    console.log({ lSetWins, lGameWins, totalSets, totalGames });
+                    return (
+                      <>
+                        <div
+                          className={cn(
+                            "rounded-3xl overflow-hidden flex flex-col",
+                            "items-stretch mb-6",
+                          )}
+                        >
+                          <div className="flex flex-col relative items-center">
+                            <div className="absolute w-full h-full top-0 left-0 flex flex-row items-stretch">
+                              <div
+                                className="bg-accent/30"
+                                style={{
+                                  width: `${(100 * lSetWins) / totalSets}%`,
+                                }}
+                              />
+                              <div className="bg-secondary/30 flex-1" />
+                            </div>
+                            <div
+                              className={cn(
+                                "flex flex-col items-center py-1",
+                                "relative z-1",
+                              )}
+                            >
+                              <div className="text-xl/6">Set Count</div>
+                              <div className="text-2xl/8 font-bold">
+                                {lSetWins} - {totalSets - lSetWins}
+                              </div>
+                            </div>
+                          </div>
+                          {(() => {
+                            if (!totalGames) {
+                              return null;
+                            }
+                            return (
+                              <>
+                                <div className="h-2" />
+                                <div className="flex flex-col relative items-center">
+                                  <div className="absolute w-full h-full top-0 left-0 flex flex-row items-stretch">
+                                    <div
+                                      className="bg-accent/30"
+                                      style={{
+                                        width: `${(100 * lGameWins) / totalGames}%`,
+                                      }}
+                                    />
+                                    <div className="bg-secondary/30 flex-1" />
+                                  </div>
+                                  <div
+                                    className={cn(
+                                      "flex flex-col items-center py-1",
+                                      "relative z-1",
+                                    )}
+                                  >
+                                    <div className="text-xl/6">Game Count</div>
+                                    <div className="text-2xl/8 font-bold">
+                                      {lGameWins} - {totalGames - lGameWins}
+                                    </div>
+                                  </div>
+                                </div>
+                              </>
+                            );
+                          })()}
+                        </div>
+                        <h3 className="font-bold text-3xl flex justify-center">
+                          Sets
+                        </h3>
+                        {h2hs.sets.map((set) => {
+                          return (
+                            <div
+                              key={set.setInfo.id}
+                              className={cn(
+                                "flex flex-row items-stretch my-2",
+                                "rounded-3xl bg-base-300 shadow-md",
+                                "overflow-hidden min-w-0",
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  "w-6",
+                                  set.setInfo.won
+                                    ? "bg-accent"
+                                    : "bg-accent/30",
+                                )}
+                              />
+                              <div className="flex-1 flex flex-row items-center min-w-0">
+                                <div className="flex flex-row text-3xl font-bold w-16 justify-center">
+                                  {set.setInfo.wonGames}
+                                </div>
+                                <div className="flex flex-1 flex-col items-center py-2 min-w-0 w-auto relative">
+                                  <a
+                                    className={cn(
+                                      "hover:underline hover:text-primary inline text-center",
+                                      "font-bold overflow-hidden min-w-0",
+                                      "whitespace-nowrap text-ellipsis w-full",
+                                    )}
+                                    href={`https://start.gg/${set.slug}`}
+                                    target="_blank"
+                                  >
+                                    {set.tournamentName}
+                                  </a>
+                                  <div
+                                    className={cn(
+                                      "leading-4 overflow-hidden min-w-0 inline text-center",
+                                      "whitespace-nowrap text-ellipsis w-full",
+                                    )}
+                                  >
+                                    {set.setInfo.round}
+                                  </div>
+                                  <div
+                                    className={cn(
+                                      "text-sm/4 opacity-67 overflow-hidden",
+                                      "whitespace-nowrap text-ellipsis",
+                                    )}
+                                  >
+                                    {set.date}
+                                  </div>
+                                </div>
+                                <div className="flex flex-row text-3xl font-bold w-16 justify-center">
+                                  {set.setInfo.lostGames}
+                                </div>
+                              </div>
+                              <div
+                                className={cn(
+                                  "w-6",
+                                  set.setInfo.won
+                                    ? "bg-secondary/30"
+                                    : "bg-secondary",
+                                )}
+                              />
+                            </div>
+                          );
+                        })}
+                        <div className="h-6" />
+                      </>
+                    );
+                  })()}
+                  <h3 className="font-bold text-3xl flex justify-center">
+                    Tournaments
+                  </h3>
+                </div>
+              );
+            })()}
           </div>
-          <div>p2</div>
+          <div className="hidden md:block w-50">p1</div>
         </div>
       </div>
     );

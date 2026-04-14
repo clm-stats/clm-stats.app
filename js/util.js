@@ -13,7 +13,12 @@ let PERIOD_ID_BY_SEASON = {};
 let SEASON_BY_PERIOD_ID = {};
 let TITLE_BY_PERIOD_ID = {};
 
+const OUT_OF_REGION = new Set([]);
+
 export function setTimeline(newTimeline) {
+  for (const ident of newTimeline.outofRegionIdents || []) {
+    OUT_OF_REGION.add(ident);
+  }
   timeline = newTimeline;
   PERIODS = {};
   PERIOD_ID_BY_SEASON = {};
@@ -147,39 +152,6 @@ const PLAYER_DATA = {
   anxious: { character: "SHEIK", lastRank: 9 },
   Jackie: { character: "GANONDORF", lastRank: 10 },
 };
-
-const OUT_OF_REGION = new Set([
-  "Zamu",
-  "macdaddy69",
-  "Sp1nda",
-  "essy",
-  "Slowking",
-  "Will Pickles",
-  "kate wisconsin",
-  "Preeminent",
-  "Olivia :3",
-  "Smash Papi",
-  "Lowercase hero",
-  "Nakamaman",
-  "Chango",
-  "Moe",
-  "DannyPhantom",
-  "Ginger",
-  "AbsentPage",
-  "Ben",
-  "KJH",
-  "Drephen",
-  "Morsecode762",
-  "Fraggin&Laggin",
-  "PRZ",
-  "Grab2Win",
-  "MOF",
-  "Wevans",
-  "max",
-  "Epoodle",
-  "lexor",
-  "Seal",
-]);
 
 export function inRegion(player) {
   return !OUT_OF_REGION.has(player);

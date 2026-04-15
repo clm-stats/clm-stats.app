@@ -5,13 +5,14 @@ import * as U from "./util";
 function getUrlState(href) {
   const url = new URL(href || window.location.href);
   const hrefPath = url.pathname;
-  const parts = /^\/([a-z0-9_\-]+)\/([a-z0-9]*)(\.html)?$/.exec(
+  const partsA = /^\/([a-z0-9_\-]+)\/([a-z0-9]*)(\.html)?$/.exec(
     hrefPath.toLowerCase(),
   );
-  const periodId = U.resolveSeasonStr((parts || [])[1]);
+  const partsB = /^\/([a-z0-9]*)(\.html)?$/.exec(hrefPath.toLowerCase());
+  const periodId = U.resolveSeasonStr((partsA || [])[1]);
   const page = hrefPath.endsWith("/-")
     ? "players"
-    : U.resolvePageStr((parts || [])[2]);
+    : U.resolvePageStr((partsA || [])[2] || (partsB || [])[1]);
 
   const sort = {
     by: U.resolveSortBy(url.searchParams.get("by")),

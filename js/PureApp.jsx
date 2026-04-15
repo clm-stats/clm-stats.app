@@ -2320,7 +2320,7 @@ export default function PureApp(props) {
         dropdownStart={true}
       />,
       !pL
-        ? undefined
+        ? genUrl({})
         : genUrl(pR ? { pids: [rPid], skip: true } : { pids: [], skip: false }),
     );
     const argsR = playerPageArgs(
@@ -2342,7 +2342,7 @@ export default function PureApp(props) {
         fuzzyFiltered={fuzzyFiltered}
         outsideNav={true}
       />,
-      !pR ? undefined : genUrl({ pids: pL ? [lPid] : [], skip: false }),
+      !pR ? genUrl({}) : genUrl({ pids: pL ? [lPid] : [], skip: false }),
       true,
     );
     return (

@@ -6,6 +6,124 @@ import fuzzysort from "fuzzysort";
 
 const misreportMsg = "Set misreported on start.gg";
 
+const STATIC_LUCKY_STATS_ID_BY_CLM_ID = {
+  [420]: 322, // dz
+  [1062]: 21081, // ober
+  [1286]: 72859, // pleeba
+  [845]: 12922, // mof
+  [870]: 240, // DannyPhantom
+  [665]: 21094, // unsure
+  [1978]: 100, // Stella
+  [450]: 39548, // Latin
+  [189]: 22100, // Ferocitii
+  [588]: 21103, // Forest
+  [1044]: 21115, // Arpy
+  [1]: 84416, // Raymond
+  [642]: 47243, // GI0STAR
+  [1543]: 49815, // easy
+  [1795]: 73996, // eggy
+  [397]: 8548, // ReLaxn
+  [417]: 11631, // jisp
+  [295]: 74000, // Fasthands
+  [238]: 474, // Frost
+  [1836]: 148, // Fry
+  [413]: 640, // Kick
+  [42069]: 91, // Rocks
+  [1513]: 369, // Casual
+  [946]: 74486, // Umma
+  [1449]: 1214031, // JustJoe
+  [1132]: 14460, // WattPheasant
+  [1755]: 74480, // greg
+  [703]: 816606, // cratylus
+  [1196]: 73029, // mase
+  [1868]: 59962, // Basil
+  [1187]: 6793944, // Trix
+  [1567]: 558313, // evil lesbian
+  [1576]: 11628, // Trevor
+  [569]: 85311, // notsocrazy
+  [26]: 33663, // jade anxious
+  [1186]: 74455, // Orotis
+  [422]: 73420, // Surskim
+  [1714]: 11625, // Killablue
+  [1163]: 73182, // FeelinGood
+  [192]: 60535, // Merlisker
+  [993]: 7125053, // Rizz Princess
+  [666]: 80605, // ink
+  [764]: 19408, // Anconoid
+  [741]: 1223, // Tawm,
+  [1436]: 21392, // Nephenee
+  [3]: 7455, // jess dang3r
+  [1732]: 51257, // sambone
+  [943]: 252971, // Lazarous
+  [10]: 11625, // kevin tenacity
+  [932]: 74538, // yolk
+  [1041]: 21147, // sunshine
+  [1440]: 110, // kadence
+  [1206]: 21166, // homeslice
+  [682]: 73168, // jaq
+  [1873]: 21139, // kibby
+  [432]: 60659, // pregnanyand16
+  [32]: 21400, // prax
+  [100]: 395433, // Blowfishh
+  [1704]: 74451, // gamer
+  [210]: 10032, // Erebus
+  [1033]: 1062907, // Zoraakk
+  [155]: 37559, // CJ
+  [1691]: 74630, // pansy_scheme
+  [2106]: 13046, // jagr
+  [777]: 68176, // yuunia
+  [1222]: 74565, // Carter
+  [1474]: 21403, // Axel
+  [218]: 1075246, // Lil Nach
+  [890]: 74560, // sir ghei
+  [35]: 73425, // Grunker
+  [249]: 21396, // Brendan
+  [1263]: 80722, // June
+  [517]: 394302, // frog catcher
+  [1997]: 74638, // Monarc
+  [272]: 85340, // Scoob
+  [1668]: 1017351, // Mild
+  [1459]: 589086, // penny
+};
+
+function renderConnections(player) {
+  if (!player) {
+    return null;
+  }
+  const luckyStatsId = STATIC_LUCKY_STATS_ID_BY_CLM_ID[player.clmId];
+  return (
+    <>
+      {!player.twitter ? null : (
+        <a
+          className="ml-1"
+          target="_blank"
+          href={`https://x.com/${player.twitter}`}
+        >
+          <img className="h-4 w-4" src="/links/twitter.png" />
+        </a>
+      )}
+      {!player.twitch ? null : (
+        <a
+          className="ml-1"
+          target="_blank"
+          href={`https://www.twitch.tv/${player.twitch}`}
+        >
+          <img className="h-4 w-4" src="/links/twitch.png" />
+        </a>
+      )}
+      {!luckyStatsId ? null : (
+        <a
+          className="ml-1"
+          target="_blank"
+          href={`https://luckystats.gg/player/${luckyStatsId}`}
+        >
+          <img className="h-4 w-4" src="/links/lucky_stats.png" />
+        </a>
+      )}
+    </>
+  );
+}
+
 let hasRendered = false;
 
 const Sorteds = {};
@@ -175,7 +293,7 @@ class ActivePlayerIcons extends Component {
               )}
               style={{
                 left: 0,
-                scale: ind >= 0 && currMax - ind > 4 ? "0" : "1",
+                scale: ind < 0 || currMax - ind > 4 ? "0" : "1",
                 translate: `${2 * ((ind < 0 ? currMax : ind) + buffer)}rem 0`,
               }}
             >
@@ -356,7 +474,12 @@ class AbsolutePlayerRow extends Component {
                   />
                 ),
                 name: rank.player.tag,
-                pronouns: rank.player.pronouns,
+                pronouns: (
+                  <span className="inline-flex flex-row items-center">
+                    <span>{rank.player.pronouns}</span>
+                    {renderConnections(rank.player)}
+                  </span>
+                ),
                 character: charImage(rank && rank.player),
                 qual: canShow(rank)
                   ? Math.round(
@@ -1110,6 +1233,15 @@ class TournamentsList extends Component {
       </div>
     );
   }
+}
+
+function shuffleArray(arrayIn) {
+  const array = [...arrayIn];
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 }
 
 export default function PureApp(props) {
@@ -1973,11 +2105,11 @@ export default function PureApp(props) {
       realName: (
         <span className="inline-flex items-center">
           {charImage(player, "mr-2")}
-          {player.realName}
+          {breakMid ? null : player.realName}
           {!player.pronouns ? null : (
             <span className="text-lg">&nbsp;({player.pronouns})</span>
           )}
-          {extraIdents.length === 0 ? null : (
+          {extraIdents.length === 0 || breakMid ? null : (
             <span className="opacity-67 italic text-sm">
               &nbsp;&nbsp;&nbsp;other tags:&nbsp;
               {extraIdents.map((i, ind) => (
@@ -1992,6 +2124,7 @@ export default function PureApp(props) {
               ))}
             </span>
           )}
+          {renderConnections(player)}
         </span>
       ),
       breakMid,
@@ -2726,41 +2859,53 @@ export default function PureApp(props) {
 
     function renderHead(g, isRight = false) {
       return (
-        <a
+        <div
           key={`${isRight ? "r" : "l"}Label:${g.pid}`}
-          href={genUrl({
-            pids: pids.filter((_, pidInd) => pidInd !== g.pidInd),
-            reset: pids.length === 1,
-          })}
           className={cn(
-            h2hDims.w,
-            "bg-info/5 flex flex-row items-center justify-start",
-            "transition transition-colors duration-300",
-            "cursor-pointer group p-1 inset-shadow-sm",
-            "hover:bg-error/50",
+            "bg-base-100 flex flex-row items-stretch justify-start",
+            "transition transition-colors duration-300 group",
             "overflow-hidden hover:overflow-visible",
+            h2hDims.h,
+            h2hDims.w,
           )}
         >
-          <div className="relative p-2">
+          <div className="relative flex-1 flex items-stretch bg-info/5">
             <div
               className={cn(
                 "transition transition-opacity transition-colors duration-300",
-                "absolute top-0 left-0 w-full h-full rounded-full",
-                "border-1 border-warning-content shadow-md bg-warning",
-                "opacity-0 group-hover:opacity-100 group-hover:z-400",
+                isRight ? "right-0" : "left-0",
+                "absolute top-0 w-100 h-25 rounded-box bg-base-200",
+                "border-1 border-gray-300 dark:border-gray-700 shadow-md",
+                "opacity-0 group-hover:opacity-100 group-hover:z-900",
+                "flex flex-col justify-center items-stretch",
               )}
-            ></div>
+            >
+              {playerHeader(
+                playerPageArgs(
+                  g.player,
+                  `h2hL:${g.pidInd}`,
+                  true,
+                  null,
+                  null,
+                  isRight,
+                ),
+                {
+                  isSmall: true,
+                  reverseRow: isRight,
+                },
+              )}
+            </div>
             <div
               className={cn(
-                "transition transition-colors duration-300",
-                "group-hover:text-warning-content relative",
-                "group-hover:z-500",
+                "transition transition-opacity duration-300",
+                "opacity-100 group-hover:opacity-0 relative",
+                "flex justify-center items-center flex-1",
               )}
             >
               {g.player ? g.player.name : <div className="skeleton h-4 w-12" />}
             </div>
           </div>
-        </a>
+        </div>
       );
     }
 
@@ -2844,102 +2989,132 @@ export default function PureApp(props) {
       .filter((r) => r.inRegion && r.doesMeetActivity)
       .slice(0, 25)
       .map((r) => `${r.player.clmId}`);
+    const surpriseIds = shuffleArray(
+      ranks.filter((r) => r.inRegion && r.doesMeetActivity),
+    )
+      .slice(0, 10)
+      .map((r) => `${r.player.clmId}`);
 
     return (
-      <div className="flex flex-col items-stretch max-w-full min-h-92 max-h-[calc(100vh_-_4rem)] overflow-scroll justify-between">
-        <div className="sticky left-0 top-0 bg-base-300 z-600">
+      <div className="flex flex-col items-stretch w-full h-[calc(100vh_-_4rem)]">
+        <div className="bg-base-300">
           <div className="p-4 flex flex-col gap-2">
-            <div className="content">
-              <p>
-                Create your own H2H Matrix for the Current PR Period. Type a tag
-                in the box below to add a player or click on a player to remove.
-              </p>
-              <br />
-              <p>
-                I recommend using this on desktop, especially if you want to
-                compare a large number of players.
-              </p>
-            </div>
             <div className="flex flex-row gap-2">
               {h2hQuickLink("Top 5", top5ClmIds)}
               {h2hQuickLink("Top 10", top10ClmIds, { pids: [] })}
               {h2hQuickLink("PR Candidates", prCandidateIds)}
+              {h2hQuickLink("Surprise Me!", surpriseIds)}
               {h2hQuickLink("Reset", [])}
             </div>
           </div>
         </div>
-        <div className="flex items-stretch p-2">
-          <div className={cn("flex-1 flex flex-col gap-1")}>
-            <div
-              key={`lLabel`}
-              className={cn(h2hDims.h, "flex flex-row gap-1 ml-14")}
-            >
-              <div key={`lLabel:`} className={h2hDims.w} />
-              {playerData.map(renderHead)}
-            </div>
-            {playerData.map((l) => {
-              return (
-                <div
-                  key={`l:${l.pid}`}
-                  className={cn(h2hDims.h, "h-10 flex flex-row gap-1")}
-                >
-                  <div className="flex flex-row items-stretch">
+        <div className="flex-1 relative">
+          <div className="absolute top-0 left-0 w-full h-full overflow-scroll flex items-stretch">
+            <div className={cn("flex-1 flex flex-col")}>
+              <div
+                key={`lLabel`}
+                className={cn(
+                  h2hDims.h,
+                  "flex flex-row gap-1 pl-[calc(4.25rem+8px)]",
+                  "sticky top-0 bg-base-100 z-1",
+                )}
+              >
+                <div key={`lLabel:`} className={h2hDims.w} />
+                {playerData.map((p) => renderHead(p, true))}
+              </div>
+              {playerData.map((l) => {
+                return (
+                  <div key={`l:${l.pid}`} className={cn("flex flex-row gap-1")}>
                     <div
-                      key={`swap-btns:${l.pid}`}
-                      className="flex flex-row items-center bg-info/5 px-1"
+                      className={cn(
+                        "flex flex-row items-stretch",
+                        "sticky left-0 bg-base-100",
+                        "hover:z-2",
+                      )}
                     >
-                      <a
-                        href={genUrl({
-                          pids: [
-                            ...pids.slice(0, l.pidInd - 1),
-                            pids[l.pidInd],
-                            pids[l.pidInd - 1],
-                            ...pids.slice(l.pidInd + 1),
-                          ],
-                        })}
+                      <div
+                        key={`swap-btns:${l.pid}`}
                         className={cn(
-                          "p-1 transition transition-colors duration-300",
-                          "hover:text-primary hover:bg-warning",
-                          { "opacity-0 pointer-events-none": !l.pidInd },
+                          h2hDims.h,
+                          "flex flex-row my-px items-center bg-info/5 px-1",
                         )}
                       >
-                        <Icon.sortUp.s4 />
-                      </a>
-                      <a
-                        href={genUrl({
-                          pids: [
-                            ...pids.slice(0, l.pidInd),
-                            pids[l.pidInd + 1],
-                            pids[l.pidInd],
-                            ...pids.slice(l.pidInd + 2),
-                          ],
-                        })}
-                        className={cn(
-                          "p-1 transition transition-colors duration-300",
-                          "hover:text-primary hover:bg-warning",
-                          {
-                            "opacity-0 pointer-events-none":
-                              l.pidInd + 1 >= playerData.length,
-                          },
-                        )}
-                      >
-                        <Icon.sortDown.s4 />
-                      </a>
+                        <a
+                          href={genUrl({
+                            pids: [
+                              ...pids.slice(0, l.pidInd),
+                              ...pids.slice(l.pidInd + 1),
+                            ],
+                          })}
+                          className={cn(
+                            "border-1 h-[calc(1rem+2px)] w-[calc(1rem+2px)]",
+                            "p-0 transition transition-colors duration-300",
+                            "border-error-content hover:border-error",
+                            "mx-1 overflow-hidden rounded-full inset-shadow-sm",
+                            "text-error-content hover:text-error",
+                            "bg-error hover:bg-error-content",
+                          )}
+                        >
+                          <Icon.circleXmark.s4 />
+                        </a>
+                        <a
+                          href={genUrl({
+                            pids: [
+                              ...pids.slice(0, l.pidInd - 1),
+                              pids[l.pidInd],
+                              pids[l.pidInd - 1],
+                              ...pids.slice(l.pidInd + 1),
+                            ],
+                          })}
+                          className={cn(
+                            "border-1 h-[calc(1rem+2px)] w-[calc(1rem+2px)]",
+                            "p-0 transition transition-colors duration-300",
+                            "border-info-content hover:border-info",
+                            "m-px overflow-hidden rounded-md",
+                            "text-info-content hover:text-info",
+                            "bg-info hover:bg-info-content",
+                            { "opacity-0 pointer-events-none": !l.pidInd },
+                          )}
+                        >
+                          <Icon.sortUp.s4 />
+                        </a>
+                        <a
+                          href={genUrl({
+                            pids: [
+                              ...pids.slice(0, l.pidInd),
+                              pids[l.pidInd + 1],
+                              pids[l.pidInd],
+                              ...pids.slice(l.pidInd + 2),
+                            ],
+                          })}
+                          className={cn(
+                            "border-1 h-[calc(1rem+2px)] w-[calc(1rem+2px)]",
+                            "p-0 transition transition-colors duration-300",
+                            "border-info-content hover:border-info",
+                            "mr-1 overflow-hidden rounded-md",
+                            "text-info-content hover:text-info",
+                            "bg-info hover:bg-info-content",
+                            {
+                              "opacity-0 pointer-events-none":
+                                l.pidInd + 1 >= playerData.length,
+                            },
+                          )}
+                        >
+                          <Icon.sortDown.s4 />
+                        </a>
+                      </div>
+                      {renderHead(l, false)}
                     </div>
-                    {renderHead(l, true)}
+                    <div className={cn(h2hDims.h, "py-px flex flex-row gap-1")}>
+                      {playerData.map((r) => renderCell(l, r))}
+                    </div>
                   </div>
-                  {playerData.map((r) => renderCell(l, r))}
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
-        <div
-          className={cn(
-            "sticky left-0 bottom-0 w-full",
-            "bg-base-300 flex flex-col items-stretch p-2",
-          )}
-        >
+        <div className={cn("bg-base-300 flex flex-col items-stretch p-2")}>
           <div
             className={cn(
               "max-w-80 h-10 flex flex-col items-stretch",

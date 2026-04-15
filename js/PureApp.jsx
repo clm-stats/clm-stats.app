@@ -483,7 +483,7 @@ class AbsolutePlayerRow extends Component {
                 character: charImage(rank && rank.player),
                 qual: canShow(rank)
                   ? Math.round(
-                      rating === "alt1"
+                      rating !== "alt1"
                         ? rank.altRating
                         : rank.conservativeRating,
                     )
@@ -2094,7 +2094,7 @@ export default function PureApp(props) {
           : "",
       qual: canShow(player.rank)
         ? Math.round(
-            rating === "alt1"
+            rating !== "alt1"
               ? player.rank.altRating
               : player.rank.conservativeRating,
           )
@@ -3405,7 +3405,7 @@ export default function PureApp(props) {
                             })}
                           >
                             <label className="flex items-center justify-between cursor-pointer">
-                              <span>view alt ratings</span>
+                              <span>view denormalized ratings</span>
                               <label
                                 className={cn(
                                   "swap swap-rotate h-7 w-7 p-1 border-1",

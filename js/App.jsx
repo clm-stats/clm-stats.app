@@ -13,7 +13,6 @@ function getUrlState(href) {
     ? "players"
     : U.resolvePageStr((parts || [])[2]);
 
-  console.log({ hrefPath, p2: (parts || [])[2] });
   const sort = {
     by: U.resolveSortBy(url.searchParams.get("by")),
     dir: U.resolveSortDir(url.searchParams.get("dir")),
@@ -27,7 +26,10 @@ function getUrlState(href) {
     const hashPidStr = hash.substring(1);
     return hashPidStr ? hashPidStr.split("~") : [];
   })();
-  const pids = [...hpids, ...qpids];
+  const urlPids = [...hpids, ...qpids];
+  const isH2hReset = Boolean(url.searchParams.get("reset"));
+  const shouldUseTop10 = page === "h2h" && !urlPids.length && !isH2hReset;
+  const pids = shouldUseTop10 ? U.getTop10ClmIds(periodId) : urlPids;
   for (const pid of pids) {
     window.fetchPlayer(periodId, pid);
   }

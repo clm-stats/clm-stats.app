@@ -12,6 +12,7 @@ let PERIODS = {};
 let PERIOD_ID_BY_SEASON = {};
 let SEASON_BY_PERIOD_ID = {};
 let TITLE_BY_PERIOD_ID = {};
+let TOP10_BY_PERIOD_ID = {};
 
 const OUT_OF_REGION = new Set([]);
 
@@ -25,11 +26,13 @@ export function setTimeline(newTimeline) {
   PERIOD_ID_BY_SEASON = {};
   SEASON_BY_PERIOD_ID = {};
   TITLE_BY_PERIOD_ID = {};
+  TOP10_BY_PERIOD_ID = {};
   for (const period of timeline.periods) {
     PERIODS[period.periodId] = period;
     PERIOD_ID_BY_SEASON[period.season] = period.periodId;
     SEASON_BY_PERIOD_ID[period.periodId] = period.season;
     TITLE_BY_PERIOD_ID[period.periodId] = period.title;
+    TOP10_BY_PERIOD_ID[period.periodId] = period.top10ClmIds || [];
   }
 }
 
@@ -103,6 +106,11 @@ export function getSeason(periodId) {
 
 export function getTitle(periodId) {
   return TITLE_BY_PERIOD_ID[periodId] || TITLE_BY_PERIOD_ID[timeline.current];
+}
+
+export function getTop10ClmIds(periodId) {
+  const rawResult = TOP10_BY_PERIOD_ID[periodId] || [];
+  return rawResult.map((n) => (typeof n === "number" ? `${n}` : n));
 }
 
 export function getPeriodId(season) {

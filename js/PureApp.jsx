@@ -468,9 +468,6 @@ class PlayerSearch extends Component {
     }
   }
 
-  componentDidUpdate() {
-    this.onUpdate();
-  }
   componentDidMount() {
     this.navbar = document.getElementById("navbar");
     this.onUpdate();
@@ -531,9 +528,11 @@ class PlayerSearch2 extends PlayerSearch {
       switch (event.key) {
         case "ArrowUp":
           this.setState({ highlightedRank: this.highlightedRank - 1 });
+          this.onUpdate();
           break;
         case "ArrowDown":
           this.setState({ highlightedRank: this.highlightedRank + 1 });
+          this.onUpdate();
           break;
         case "Enter":
           const rank = this.ranks[this.state.highlightedRank];
@@ -630,7 +629,7 @@ class PlayerSearch2 extends PlayerSearch {
               : outsideNav
                 ? "right-2"
                 : "-right-12",
-            "w-full shadow-sm bg-base-200 rounded-box z-300 p-0 min-w-70",
+            "w-full shadow-sm bg-base-200 rounded-box z-800 p-0 min-w-70",
           )}
         >
           <ul tabIndex={-1} className={cn("relative w-full menu")}>
@@ -1345,6 +1344,7 @@ export default function PureApp(props) {
       P.tab === U.resolveTab(P.page) ? {} : { tab: P.tab },
       P.skip ? { skip: "1" } : {},
       P.rating === "alt1" ? { rating: P.rating } : {},
+      P.page === "h2h" && P.reset ? { reset: "y" } : {},
     );
     const hash =
       P.page !== "stats" && P.pids.length ? `#${P.pids.join("~")}` : "";
@@ -2727,6 +2727,7 @@ export default function PureApp(props) {
           key={`${isRight ? "r" : "l"}Label:${g.pid}`}
           href={genUrl({
             pids: pids.filter((_, pidInd) => pidInd !== g.pidInd),
+            reset: pids.length === 1,
           })}
           className={cn(
             h2hDims.w,
@@ -2743,13 +2744,14 @@ export default function PureApp(props) {
                 "transition transition-opacity transition-colors duration-300",
                 "absolute top-0 left-0 w-full h-full rounded-full",
                 "border-1 border-warning-content shadow-md bg-warning",
-                "opacity-0 group-hover:opacity-100",
+                "opacity-0 group-hover:opacity-100 group-hover:z-400",
               )}
             ></div>
             <div
               className={cn(
                 "transition transition-colors duration-300",
                 "group-hover:text-warning-content relative",
+                "group-hover:z-500",
               )}
             >
               {g.player ? g.player.name : <div className="skeleton h-4 w-12" />}
@@ -2815,9 +2817,34 @@ export default function PureApp(props) {
       );
     }
 
+    function h2hQuickLink(name, targetPids, genUrlExtra = {}) {
+      const isActive = targetPids.join("|") === pids.join("|");
+      return (
+        <a
+          key={`h2hQL:${name}`}
+          href={genUrl({
+            page: "h2h",
+            reset: !targetPids.length,
+            pids: targetPids,
+            ...genUrlExtra,
+          })}
+          className={cn("btn btn-soft btn-info", { "btn-active": isActive })}
+        >
+          {name}
+        </a>
+      );
+    }
+
+    const top10ClmIds = U.getTop10ClmIds(periodId);
+    const top5ClmIds = top10ClmIds.slice(0, 5);
+    const prCandidateIds = ranks
+      .filter((r) => r.inRegion && r.doesMeetActivity)
+      .slice(0, 25)
+      .map((r) => `${r.player.clmId}`);
+
     return (
       <div className="flex flex-col items-stretch max-w-full min-h-92 max-h-[calc(100vh_-_4rem)] overflow-scroll justify-between">
-        <div className="sticky left-px top-0">
+        <div className="sticky left-0 top-0 bg-base-300 z-600">
           <div className="p-4 flex flex-col gap-2">
             <div className="content">
               <p>
@@ -2831,21 +2858,10 @@ export default function PureApp(props) {
               </p>
             </div>
             <div className="flex flex-row gap-2">
-              <a href="/" className="btn btn-soft btn-info">
-                Top 5
-              </a>
-              <a href="/" className="btn btn-soft btn-info">
-                Top 10
-              </a>
-              <a href="/" className="btn btn-soft btn-info">
-                PR Candidates
-              </a>
-              <a href="/" className="btn btn-soft btn-info">
-                Surprise Me!
-              </a>
-              <a href="/" className="btn btn-soft btn-info">
-                Reset
-              </a>
+              {h2hQuickLink("Top 5", top5ClmIds)}
+              {h2hQuickLink("Top 10", top10ClmIds, { pids: [] })}
+              {h2hQuickLink("PR Candidates", prCandidateIds)}
+              {h2hQuickLink("Reset", [])}
             </div>
           </div>
         </div>
@@ -2880,7 +2896,7 @@ export default function PureApp(props) {
                         })}
                         className={cn(
                           "p-1 transition transition-colors duration-300",
-                          "hover:text-primary hover:bg-warning/50",
+                          "hover:text-primary hover:bg-warning",
                           { "opacity-0 pointer-events-none": !l.pidInd },
                         )}
                       >
@@ -2897,7 +2913,7 @@ export default function PureApp(props) {
                         })}
                         className={cn(
                           "p-1 transition transition-colors duration-300",
-                          "hover:text-primary hover:bg-warning/50",
+                          "hover:text-primary hover:bg-warning",
                           {
                             "opacity-0 pointer-events-none":
                               l.pidInd + 1 >= playerData.length,
@@ -2917,30 +2933,37 @@ export default function PureApp(props) {
         </div>
         <div
           className={cn(
-            "sticky bottom-0 w-full max-w-80 h-10 border-2 border-gray-300",
-            "dark:bg-gray-700 bg-base-300 flex flex-col items-stretch ml-4",
+            "sticky left-0 bottom-0 w-full",
+            "bg-base-300 flex flex-col items-stretch p-2",
           )}
         >
-          <PlayerSearch2
-            periodId={periodId}
-            setUrl={setUrl}
-            pids={pids}
-            pidsKey={pidsKey}
-            genUrl={genUrl}
-            togglePid={togglePid}
-            isStatsOn={
-              !isInitialPage && page === "stats" && prevPage !== "stats"
-            }
-            isStatsOff={
-              !isInitialPage && page !== "stats" && prevPage === "stats"
-            }
-            page={page}
-            isStatsPage={isStatsPage}
-            fuzzyFiltered={fuzzyFiltered}
-            outsideNav={true}
-            dropdownStart={true}
-            dropdownTop={true}
-          />
+          <div
+            className={cn(
+              "max-w-80 h-10 flex flex-col items-stretch",
+              "border-2 border-gray-300 dark:border-gray-700",
+            )}
+          >
+            <PlayerSearch2
+              periodId={periodId}
+              setUrl={setUrl}
+              pids={pids}
+              pidsKey={pidsKey}
+              genUrl={genUrl}
+              togglePid={togglePid}
+              isStatsOn={
+                !isInitialPage && page === "stats" && prevPage !== "stats"
+              }
+              isStatsOff={
+                !isInitialPage && page !== "stats" && prevPage === "stats"
+              }
+              page={page}
+              isStatsPage={isStatsPage}
+              fuzzyFiltered={fuzzyFiltered}
+              outsideNav={true}
+              dropdownStart={true}
+              dropdownTop={true}
+            />
+          </div>
         </div>
       </div>
     );
@@ -2977,7 +3000,7 @@ export default function PureApp(props) {
   return (
     <div className="container overflow-hidden max-w-290 rounded-none min-h-screen mx-auto px-0 card bg-base-100 shadow-xl m-4 my-0">
       <div className="w-auto max-w-screen min-h-screen max-h-screen overflow-scroll">
-        <div className="flex max-w-screen flex-col self-stretch sticky z-40 left-0 top-0">
+        <div className="flex max-w-screen flex-col self-stretch sticky z-750 left-0 top-0">
           <div
             id="navbar"
             className={cn(

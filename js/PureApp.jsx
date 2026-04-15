@@ -2770,7 +2770,7 @@ export default function PureApp(props) {
         return (
           <div
             key={key}
-            className={cn(h2hDims.w, "bg-gray-700 dark:bg-gray-300")}
+            className={cn(h2hDims.w, "bg-gray-100 dark:bg-gray-900")}
           />
         );
       }

@@ -1739,7 +1739,7 @@ export default function PureApp(props) {
     );
   }
 
-  function playerHeader(args, { forceAnimateIn, reverseRow } = {}) {
+  function playerHeader(args, { forceAnimateIn, reverseRow, isSmall } = {}) {
     return (
       <div
         className={cn(mkAnimateInCn(forceAnimateIn), "flex relative z-10", {
@@ -1749,7 +1749,8 @@ export default function PureApp(props) {
         <div className="w-2 lg:w-8" />
         <div
           className={cn(
-            "h-23 w-23 lg:h-28 lg:w-28 overflow-hidden shadow-lg rounded-full",
+            isSmall ? "h-16 w-16" : "h-23 w-23",
+            "lg:h-28 lg:w-28 overflow-hidden shadow-lg rounded-full",
             "border-2 border-gray-400 dark:border-gray-600",
           )}
         >
@@ -1759,7 +1760,8 @@ export default function PureApp(props) {
         <div className="flex-1 relative flex flex-col items-stretch pt-2 lg:pt-5">
           <div
             className={cn(
-              "h-9 lg:h-12 text-3xl lg:text-4xl font-bold relative",
+              isSmall ? "h-8 text-xl" : "h-9 text-3xl",
+              "lg:h-12 lg:text-4xl font-bold relative",
             )}
           >
             <div
@@ -2351,12 +2353,13 @@ export default function PureApp(props) {
             "border-b-1 border-gray-300 dark:border-gray-700",
           )}
         >
-          <div className="flex-1 h-44 relative">
+          <div className="flex-1 h-38 md:h-44 relative">
             <div className="absolute left-0 top-0 h-full w-full flex flex-col items-stretch justify-center">
               <div key={`pidL:${lPid}`}>
                 {playerHeader(argsL, {
                   reverseRow: true,
                   forceAnimateIn: true,
+                  isSmall: true,
                 })}
               </div>
             </div>
@@ -2364,7 +2367,7 @@ export default function PureApp(props) {
           <div className="w-0 md:w-32" />
           <div
             className={cn(
-              "absolute w-full h-full top-12 md:top-0 left-0",
+              "absolute w-full h-full top-13 md:top-0 left-0",
               "flex flex-col items-center justify-center pointer-events-none",
             )}
           >
@@ -2378,10 +2381,10 @@ export default function PureApp(props) {
               VS
             </div>
           </div>
-          <div className="flex-1 h-44 relative">
+          <div className="flex-1 h-38 md:h-44 relative">
             <div className="absolute left-0 top-0 h-full w-full flex flex-col items-stretch justify-center">
               <div key={`pidR:${rPid}`}>
-                {playerHeader(argsR, { forceAnimateIn: true })}
+                {playerHeader(argsR, { forceAnimateIn: true, isSmall: true })}
               </div>
             </div>
           </div>

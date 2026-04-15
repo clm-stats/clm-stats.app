@@ -12,18 +12,27 @@ let PERIODS = {};
 let PERIOD_ID_BY_SEASON = {};
 let SEASON_BY_PERIOD_ID = {};
 let TITLE_BY_PERIOD_ID = {};
+let TOP10_BY_PERIOD_ID = {};
+
+const OUT_OF_REGION = new Set([]);
 
 export function setTimeline(newTimeline) {
+  // console.log({ newTimeline });
+  for (const ident of newTimeline.outOfRegionIdents || []) {
+    OUT_OF_REGION.add(ident);
+  }
   timeline = newTimeline;
   PERIODS = {};
   PERIOD_ID_BY_SEASON = {};
   SEASON_BY_PERIOD_ID = {};
   TITLE_BY_PERIOD_ID = {};
+  TOP10_BY_PERIOD_ID = {};
   for (const period of timeline.periods) {
     PERIODS[period.periodId] = period;
     PERIOD_ID_BY_SEASON[period.season] = period.periodId;
     SEASON_BY_PERIOD_ID[period.periodId] = period.season;
     TITLE_BY_PERIOD_ID[period.periodId] = period.title;
+    TOP10_BY_PERIOD_ID[period.periodId] = period.top10ClmIds || [];
   }
 }
 
@@ -99,6 +108,11 @@ export function getTitle(periodId) {
   return TITLE_BY_PERIOD_ID[periodId] || TITLE_BY_PERIOD_ID[timeline.current];
 }
 
+export function getTop10ClmIds(periodId) {
+  const rawResult = TOP10_BY_PERIOD_ID[periodId] || [];
+  return rawResult.map((n) => (typeof n === "number" ? `${n}` : n));
+}
+
 export function getPeriodId(season) {
   return PERIOD_ID_BY_SEASON[season] || timeline.current;
 }
@@ -147,39 +161,6 @@ const PLAYER_DATA = {
   anxious: { character: "SHEIK", lastRank: 9 },
   Jackie: { character: "GANONDORF", lastRank: 10 },
 };
-
-const OUT_OF_REGION = new Set([
-  "Zamu",
-  "macdaddy69",
-  "Sp1nda",
-  "essy",
-  "Slowking",
-  "Will Pickles",
-  "kate wisconsin",
-  "Preeminent",
-  "Olivia :3",
-  "Smash Papi",
-  "Lowercase hero",
-  "Nakamaman",
-  "Chango",
-  "Moe",
-  "DannyPhantom",
-  "Ginger",
-  "AbsentPage",
-  "Ben",
-  "KJH",
-  "Drephen",
-  "Morsecode762",
-  "Fraggin&Laggin",
-  "PRZ",
-  "Grab2Win",
-  "MOF",
-  "Wevans",
-  "max",
-  "Epoodle",
-  "lexor",
-  "Seal",
-]);
 
 export function inRegion(player) {
   return !OUT_OF_REGION.has(player);

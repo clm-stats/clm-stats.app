@@ -9,8 +9,10 @@ function getUrlState(href) {
     hrefPath.toLowerCase(),
   );
   const periodId = U.resolveSeasonStr((parts || [])[1]);
-  const page =
-    hrefPath === "/-" ? "players" : U.resolvePageStr((parts || [])[2]);
+  const page = hrefPath.endsWith("/-")
+    ? "players"
+    : U.resolvePageStr((parts || [])[2]);
+
   const sort = {
     by: U.resolveSortBy(url.searchParams.get("by")),
     dir: U.resolveSortDir(url.searchParams.get("dir")),
@@ -21,10 +23,13 @@ function getUrlState(href) {
   const qpids = url.searchParams.getAll("pids");
   const hpids = (() => {
     const hash = url.hash || "#";
-    const hashPid = hash.substring(1);
-    return hashPid ? [hashPid] : [];
+    const hashPidStr = hash.substring(1);
+    return hashPidStr ? hashPidStr.split("~") : [];
   })();
-  const pids = [...hpids, ...qpids];
+  const urlPids = [...hpids, ...qpids];
+  const isH2hReset = Boolean(url.searchParams.get("reset"));
+  const shouldUseTop10 = page === "h2h" && !urlPids.length && !isH2hReset;
+  const pids = shouldUseTop10 ? U.getTop10ClmIds(periodId) : urlPids;
   for (const pid of pids) {
     window.fetchPlayer(periodId, pid);
   }
@@ -32,7 +37,8 @@ function getUrlState(href) {
   const tab = U.resolveTab(page, queryTab);
   const queryRating = url.searchParams.get("rating");
   const rating = queryRating === "alt1" ? "alt1" : undefined;
-  return { page, pids, periodId, sort, filter, tab, rating };
+  const skip = !!url.searchParams.get("skip");
+  return { page, pids, periodId, sort, filter, tab, rating, skip };
 }
 
 function getStats(arr, k) {
@@ -121,7 +127,11 @@ function cleanPlayer(player) {
   }
   player[3] = new Set(player[3]);
   player[4] ||= {};
+  player[4].eventsBySlug ||= {};
   player[4].h2hByIdent ||= {};
+  for (const att of player[1]) {
+    player[4].eventsBySlug[att.event.slug] = att;
+  }
   for (const h2h of player[2]) {
     player[4].h2hByIdent[h2h.opponent] = h2h;
   }
@@ -169,9 +179,6 @@ export default class App extends Component {
       window.fetchPeriod(fetchedId),
       ...pids.map((pid) =>
         window.fetchPlayer(fetchedId, pid).catch((e) => {
-          if (e === 404) {
-            return undefined;
-          }
           throw { message: `clmPlayer#${pid} not found` };
         }),
       ),

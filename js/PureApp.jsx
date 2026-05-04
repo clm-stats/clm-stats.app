@@ -924,8 +924,8 @@ class TourneySets extends Component {
     const bgSoft = !slot.won
       ? "bg-black/4 dark:bg-white/4"
       : isMe
-        ? "bg-info/10"
-        : "bg-error/10";
+        ? "bg-info/20"
+        : "bg-error/20";
     return (
       <div className={cn("flex-1 flex", { "flex-row-reverse": !isMe })}>
         <div
@@ -990,7 +990,7 @@ class TourneySets extends Component {
                     "rounded-box justify-center text-xs cursor-pointer",
                     { "italic tooltip tooltip-right": set.isOverridden },
                     { "opacity-50": set.dq },
-                    set.won ? "bg-info/10" : "bg-error/10",
+                    set.won ? "bg-info/20" : "bg-error/20",
                     this.isActive(set)
                       ? "border-3 p-[1px]"
                       : "border-1 p-[3px]",
@@ -2236,10 +2236,10 @@ export default function PureApp(props) {
               .map(({ w, l, op, h2hSets, h2h }) => {
                 const [bgBright, bg] = (() => {
                   if (w > l) {
-                    return ["bg-info", "bg-info/10"];
+                    return ["bg-info", "bg-info/20"];
                   }
                   if (w < l) {
-                    return ["bg-error", "bg-error/10"];
+                    return ["bg-error", "bg-error/20"];
                   }
                   return [
                     "bg-black/40 dark:bg-white/40",

@@ -914,17 +914,17 @@ class TourneySets extends Component {
     const borderFull = !slot.won
       ? "border-black/10 dark:border-white/10"
       : isMe
-        ? "border-success/25"
+        ? "border-info/25"
         : "border-error/25";
     const bgFull = !slot.won
       ? "bg-black/40 dark:bg-white/40"
       : isMe
-        ? "bg-success"
+        ? "bg-info"
         : "bg-error";
     const bgSoft = !slot.won
       ? "bg-black/4 dark:bg-white/4"
       : isMe
-        ? "bg-success/10"
+        ? "bg-info/10"
         : "bg-error/10";
     return (
       <div className={cn("flex-1 flex", { "flex-row-reverse": !isMe })}>
@@ -990,13 +990,13 @@ class TourneySets extends Component {
                     "rounded-box justify-center text-xs cursor-pointer",
                     { "italic tooltip tooltip-right": set.isOverridden },
                     { "opacity-50": set.dq },
-                    set.won ? "bg-success/10" : "bg-error/10",
+                    set.won ? "bg-info/10" : "bg-error/10",
                     this.isActive(set)
                       ? "border-3 p-[1px]"
                       : "border-1 p-[3px]",
                     !this.isActive(set)
                       ? set.won
-                        ? "border-success/50"
+                        ? "border-info/50"
                         : "border-error/50"
                       : cn("border-primary shadow-lg"),
                   )}
@@ -2236,7 +2236,7 @@ export default function PureApp(props) {
               .map(({ w, l, op, h2hSets, h2h }) => {
                 const [bgBright, bg] = (() => {
                   if (w > l) {
-                    return ["bg-success", "bg-success/10"];
+                    return ["bg-info", "bg-info/10"];
                   }
                   if (w < l) {
                     return ["bg-error", "bg-error/10"];
@@ -2346,7 +2346,7 @@ export default function PureApp(props) {
                               <div
                                 className={cn(
                                   "w-1 self-stretch mr-2 shrink-0",
-                                  set.setInfo.won ? "bg-success" : "bg-error",
+                                  set.setInfo.won ? "bg-info" : "bg-error",
                                 )}
                               />
                               <div
@@ -2942,9 +2942,9 @@ export default function PureApp(props) {
         } else if (wins * 2 === total) {
           return "bg-gray-700/50 dark:bg-gray-300/50";
         } else if (ratio > 0.66 && total > 2) {
-          return "bg-success/50";
+          return "bg-info/50";
         } else if (ratio > 0.5) {
-          return "bg-success/20";
+          return "bg-info/20";
         } else if (ratio > 0.33 || total <= 2) {
           return "bg-error/20";
         } else {

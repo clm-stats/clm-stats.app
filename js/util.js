@@ -13,6 +13,7 @@ let PERIOD_ID_BY_SEASON = {};
 let SEASON_BY_PERIOD_ID = {};
 let TITLE_BY_PERIOD_ID = {};
 let TOP10_BY_PERIOD_ID = {};
+let ISACTIVE_BY_PERIOD_ID = {};
 
 const OUT_OF_REGION = new Set([]);
 
@@ -27,12 +28,14 @@ export function setTimeline(newTimeline) {
   SEASON_BY_PERIOD_ID = {};
   TITLE_BY_PERIOD_ID = {};
   TOP10_BY_PERIOD_ID = {};
+  ISACTIVE_BY_PERIOD_ID = {};
   for (const period of timeline.periods) {
     PERIODS[period.periodId] = period;
     PERIOD_ID_BY_SEASON[period.season] = period.periodId;
     SEASON_BY_PERIOD_ID[period.periodId] = period.season;
     TITLE_BY_PERIOD_ID[period.periodId] = period.title;
     TOP10_BY_PERIOD_ID[period.periodId] = period.top10ClmIds || [];
+    ISACTIVE_BY_PERIOD_ID[period.periodId] = period.isActive || false;
   }
 }
 
@@ -111,6 +114,10 @@ export function getTitle(periodId) {
 export function getTop10ClmIds(periodId) {
   const rawResult = TOP10_BY_PERIOD_ID[periodId] || [];
   return rawResult.map((n) => (typeof n === "number" ? `${n}` : n));
+}
+
+export function isActivePeriod(periodId) {
+  return ISACTIVE_BY_PERIOD_ID[periodId] || false;
 }
 
 export function getPeriodId(season) {
@@ -252,7 +259,7 @@ export function asSearchParams(filter, periodId) {
 export function getDefaultFilter(periodId) {
   return {
     outOfRegion: true,
-    inadAttendance: periodId !== timeline.current,
+    inadAttendance: periodId !== timeline.current || !isActivePeriod(periodId),
   };
 }
 

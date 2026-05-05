@@ -3015,7 +3015,7 @@ export default function PureApp(props) {
                 key={`lLabel`}
                 className={cn(
                   h2hDims.h,
-                  "flex flex-row gap-1 pl-[calc(4.25rem+8px)]",
+                  "flex flex-row gap-1 pl-[calc(4.25rem)]",
                   "sticky top-0 bg-base-100 z-1",
                 )}
               >
@@ -3047,15 +3047,14 @@ export default function PureApp(props) {
                             ],
                           })}
                           className={cn(
-                            "border-1 h-[calc(1rem+2px)] w-[calc(1rem+2px)]",
+                            "border-0 h-[calc(1.125rem)] w-[calc(1.125rem)]",
                             "p-0 transition transition-colors duration-300",
-                            "border-error-content hover:border-error",
-                            "mx-1 overflow-hidden rounded-full inset-shadow-sm",
-                            "text-error-content hover:text-error",
-                            "bg-error hover:bg-error-content",
+                            "ml-1 mr-1 overflow-hidden rounded-full",
+                            "[&:not(:hover)]:badge-soft",
+                            "badge badge-secondary hover:badge-error",
                           )}
                         >
-                          <Icon.circleXmark.s4 />
+                          <Icon.xmark.s4 />
                         </a>
                         <a
                           href={genUrl({
@@ -3067,12 +3066,11 @@ export default function PureApp(props) {
                             ],
                           })}
                           className={cn(
-                            "border-1 h-[calc(1rem+2px)] w-[calc(1rem+2px)]",
+                            "border-0 h-[calc(1.125rem)] w-[calc(0.875rem)]",
                             "p-0 transition transition-colors duration-300",
-                            "border-info-content hover:border-info",
-                            "m-px overflow-hidden rounded-md",
-                            "text-info-content hover:text-info",
-                            "bg-info hover:bg-info-content",
+                            "mx-[0.125rem] overflow-hidden rounded-md",
+                            "[&:not(:hover)]:badge-soft",
+                            "badge badge-accent hover:badge-info",
                             { "opacity-0 pointer-events-none": !l.pidInd },
                           )}
                         >
@@ -3088,12 +3086,11 @@ export default function PureApp(props) {
                             ],
                           })}
                           className={cn(
-                            "border-1 h-[calc(1rem+2px)] w-[calc(1rem+2px)]",
+                            "border-0 h-[calc(1.125rem)] w-[calc(0.875rem)]",
                             "p-0 transition transition-colors duration-300",
-                            "border-info-content hover:border-info",
-                            "mr-1 overflow-hidden rounded-md",
-                            "text-info-content hover:text-info",
-                            "bg-info hover:bg-info-content",
+                            "mr-[0.125rem] ml-0 overflow-hidden rounded-md",
+                            "[&:not(:hover)]:badge-soft",
+                            "badge badge-accent hover:badge-info",
                             {
                               "opacity-0 pointer-events-none":
                                 l.pidInd + 1 >= playerData.length,
@@ -3175,9 +3172,14 @@ export default function PureApp(props) {
   }
   const anyFilterChange = fadded.size + fminus.size > 0;
   const isStatsPage = page === "stats";
+  const isH2hPage = page === "h2h";
   return (
     <div className="container overflow-hidden max-w-290 rounded-none min-h-screen mx-auto px-0 card bg-base-100 shadow-xl m-4 my-0">
-      <div className="w-auto max-w-screen min-h-screen max-h-screen overflow-scroll">
+      <div
+        className={cn("w-auto max-w-screen min-h-screen max-h-screen", {
+          "overflow-scroll": !isH2hPage,
+        })}
+      >
         <div className="flex max-w-screen flex-col self-stretch sticky z-750 left-0 top-0">
           <div
             id="navbar"

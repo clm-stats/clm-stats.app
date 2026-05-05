@@ -86,6 +86,7 @@ function cleanPeriod(period, rating) {
   }
   period.nameByClmId = {};
   for (const ident in period.players) {
+    period.players[ident].name ||= period.players[ident].tag;
     const { clmId, name } = period.players[ident];
     period.nameByClmId[clmId] = name;
   }
@@ -97,6 +98,7 @@ function cleanPeriod(period, rating) {
     const altRating = Math.floor(percentile * 10);
     r.altRating = altRating;
     const player = period.players[r.playerIdent];
+    player.tag ||= player.name;
     const inRegion = U.inRegion(player.name);
     if (r.conservativeRating && inRegion && (isCurrent || r.prEvents >= 8)) {
       player.clmRank = nextClmRank;
@@ -132,6 +134,10 @@ function cleanPlayer(player) {
   player[4].h2hByIdent ||= {};
   for (const att of player[1]) {
     player[4].eventsBySlug[att.event.slug] = att;
+    att.setSummaries.forEach(
+      (setInfo, setInd) =>
+        (setInfo.id ||= `${att.event.id}-${player[4].clmId}-${setInd}`),
+    );
   }
   for (const h2h of player[2]) {
     player[4].h2hByIdent[h2h.opponent] = h2h;

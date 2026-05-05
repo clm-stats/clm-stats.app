@@ -2859,7 +2859,8 @@ export default function PureApp(props) {
 
     function renderHead(g, isRight = false) {
       return (
-        <div
+        <a
+          href={genUrl({ page: "players", pids: [g.pid] })}
           key={`${isRight ? "r" : "l"}Label:${g.pid}`}
           className={cn(
             "bg-base-100 flex flex-row items-stretch justify-start",
@@ -2905,7 +2906,7 @@ export default function PureApp(props) {
               {g.player ? g.player.name : <div className="skeleton h-4 w-12" />}
             </div>
           </div>
-        </div>
+        </a>
       );
     }
 

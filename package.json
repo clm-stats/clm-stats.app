@@ -5,7 +5,7 @@
   "author": "Mitch Dzugan <mitchdzugan@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev:mkhtml": "node -e 'require(\"fs\").writeFileSync(__dirname + \"/index.html\", require(\"./js/htmlDocTemplate.js\").default())'",
+    "dev:mkhtml": "node -e 'require(\"fs\").writeFileSync(__dirname+\"/index.html\",require(\"./js/htmlDocTemplate.js\").default({timeline:JSON.parse(require(\"fs\").readFileSync(require(\"path\").join(process.env.CLM_STATS_PAGES_CO,\"docs\",\"timeline.json\"),\"utf8\"))}))'",
     "dev:start": "vite dev",
     "dev": "run-s dev:mkhtml dev:start",
     "dev:gh-db": "cross-env CLM_STATS_APP_FORCE_PROXY=yes run-s dev"

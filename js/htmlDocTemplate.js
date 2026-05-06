@@ -1,7 +1,4 @@
-import * as fs from "node:fs";
-import path from "node:path";
-
-const mkDocTemplate = ({
+export default ({
   jsPath = './js/mountClient.js" type="module',
   cssPath = "./styles.css",
   body = "",
@@ -103,15 +100,3 @@ const mkDocTemplate = ({
     </body>
 </html>
 `.trim();
-
-export default (props = {}) => {
-  if (!props.timeline) {
-    props.timeline = JSON.parse(
-      fs.readFileSync(
-        path.join(process.env.CLM_STATS_PAGES_CO, "docs", "timeline.json"),
-        "utf8",
-      ),
-    );
-  }
-  return mkDocTemplate(props);
-};

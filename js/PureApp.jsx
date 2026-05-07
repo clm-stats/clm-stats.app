@@ -1305,7 +1305,10 @@ export default function PureApp(props) {
   const events = (period || {}).events || {};
   const ranks = (period || {}).ranks || [];
   function doesMeetActivity(rank) {
-    return rank.prEvents >= 8;
+    const url = new URL(window.location.href);
+    const urlPrReq = parseInt(url.searchParams.get("prReq") || "");
+    const prReq = Number.isNaN(urlPrReq) ? 8 : urlPrReq;
+    return rank.prEvents >= prReq;
   }
 
   function getPlayer(ind) {

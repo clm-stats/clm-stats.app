@@ -259,7 +259,7 @@ export function asSearchParams(filter, periodId) {
 export function getDefaultFilter(periodId) {
   return {
     outOfRegion: true,
-    inadAttendance: periodId !== timeline.current || !isActivePeriod(periodId),
+    inadAttendance: !isActivePeriod(periodId),
   };
 }
 

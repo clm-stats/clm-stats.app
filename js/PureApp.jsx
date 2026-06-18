@@ -2044,7 +2044,9 @@ export default function PureApp(props) {
     }
     const otherIdents = player.otherIdents || [];
     const allIdents = [...otherIdents, player.name];
-    const extraIdents = allIdents.filter((ident) => ident !== player.tag);
+    const extraIdents = allIdents.filter(
+      (ident) => ident.toLowerCase() !== player.tag.toLowerCase(),
+    );
     return {
       playerKey: player.clmId,
       profileImage: (

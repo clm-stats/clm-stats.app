@@ -364,6 +364,12 @@ const FIcons = {
   },
 };
 
+function eventUrl({ isChallonge, slug } = {}) {
+  return isChallonge
+    ? `https://challonge.com/${slug}`
+    : `https://start.gg/${slug}`;
+}
+
 class AbsolutePlayerRow extends Component {
   constructor(props) {
     super(props);
@@ -529,7 +535,7 @@ class AbsolutePlayerRow extends Component {
                   <a
                     className="nowrap text-primary hover:underline"
                     target="_blank"
-                    href={`https://start.gg/${rank.event.slug}`}
+                    href={eventUrl(rank.event)}
                   >
                     {rank.event.tournamentName}
                   </a>
@@ -1078,6 +1084,7 @@ class TournamentsList extends Component {
           const slug = is1
             ? eventGroup.eventViews[0].event.slug
             : eventGroup.tourney.slug;
+          const isChallonge = is1 && eventGroup.eventViews[0].event.isChallonge;
           const rawViews = [...eventGroup.eventViews];
           const ineligibles = rawViews.filter((e) => e.event.prIneligible);
           const eligibles = rawViews.filter((e) => !e.event.prIneligible);
@@ -1105,7 +1112,7 @@ class TournamentsList extends Component {
                 >
                   <div className={cn("flex flex-col min-w-0", { group: !is1 })}>
                     <a
-                      href={`https://start.gg/${slug}`}
+                      href={eventUrl({ slug, isChallonge })}
                       target="_blank"
                       className={cn(
                         "flex items-stretch bg-base-300 gglink",
@@ -1185,7 +1192,7 @@ class TournamentsList extends Component {
                         }
                       >
                         <a
-                          href={`https://start.gg/${eventView.event.slug}`}
+                          href={eventUrl(eventView.event)}
                           target="_blank"
                           className={cn(
                             "flex justify-between items-center",
@@ -2387,7 +2394,7 @@ export default function PureApp(props) {
                                 </span>
                                 &nbsp;&nbsp;
                                 <a
-                                  href={`https://start.gg/${set.slug}`}
+                                  href={eventUrl(set)}
                                   target="_blank"
                                   className={cn(
                                     "shrink hover:underline",
@@ -2700,7 +2707,7 @@ export default function PureApp(props) {
                                       "font-bold overflow-hidden min-w-0",
                                       "whitespace-nowrap text-ellipsis w-full",
                                     )}
-                                    href={`https://start.gg/${set.slug}`}
+                                    href={eventUrl(set.slug)}
                                     target="_blank"
                                   >
                                     {set.tournamentName}
@@ -2785,7 +2792,7 @@ export default function PureApp(props) {
                             </div>
                           </div>
                           <a
-                            href={`https://start.gg/${l.event.slug}`}
+                            href={eventUrl(l.event)}
                             target="_blank"
                             className={cn(
                               "flex-1 inline text-center text-sm font-bold ",

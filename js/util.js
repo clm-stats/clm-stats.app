@@ -256,6 +256,11 @@ export function asSearchParams(filter, periodId) {
   return { filter: `${res}` };
 }
 
+export function asCleanSearchParams(filter, periodId) {
+  const res = asSearchParams(filter, periodId);
+  return res.filter !== getDefaultFilterStr(periodId) ? res : {};
+}
+
 export function getDefaultFilter(periodId) {
   return {
     outOfRegion: true,

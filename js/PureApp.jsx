@@ -1482,7 +1482,7 @@ export default function PureApp(props) {
     P.tab = U.resolveTab(P.page, P.tab);
     const qs = U.mkQs(
       P.sort,
-      P.page === "stats" ? U.asSearchParams(P.filter, P.periodId) : {},
+      P.page === "stats" ? U.asCleanSearchParams(P.filter, P.periodId) : {},
       P.tab === U.resolveTab(P.page) ? {} : { tab: P.tab },
       P.skip ? { skip: "1" } : {},
       P.rating === "alt1" ? { rating: P.rating } : {},

@@ -84,6 +84,14 @@ const STATIC_LUCKY_STATS_ID_BY_CLM_ID = {
   [272]: 85340, // Scoob
   [1668]: 1017351, // Mild
   [1459]: 589086, // penny
+  [879]: 17251, // trail
+  [1784]: 6119255, // nobie
+  [1447]: 17975, // n0tch
+  [2753]: 381359, // cam
+  [1437]: 243120, // euph0ria
+  [1865]: 1025879, // genuinely
+  [1620]: 74647, // BENT
+  [357]: 33729, // lemmanade
 };
 
 function renderConnections(player) {

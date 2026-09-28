@@ -834,7 +834,11 @@ class SafeFilterIcon extends Component {
 
   shouldComponentUpdate(nextProps) {
     this.anyFilterChange = nextProps.anyFilterChange;
-    return this.props.anyFilterChange !== nextProps.anyFilterChange;
+    this.inadAttendance = this.props.inadAttendance;
+    return (
+      this.props.anyFilterChange !== nextProps.anyFilterChange ||
+      this.props.inadAttendance !== nextProps.inadAttendance
+    );
   }
 
   componentDidUpdate() {
@@ -843,8 +847,7 @@ class SafeFilterIcon extends Component {
     }
     const cl = this.el.current.classList;
     const fn = this.anyFilterChange ? (c) => cl.add(c) : (c) => cl.remove(c);
-    fn("btn-link");
-    fn("btn-warning");
+    fn("bg-info/20");
   }
 
   componentDidMount() {
@@ -856,6 +859,7 @@ class SafeFilterIcon extends Component {
 
   render() {
     this.anyFilterChange = this.props.anyFilterChange;
+    this.inadAttendance = this.props.inadAttendance;
     return (
       <button
         ref={this.el}
@@ -863,11 +867,30 @@ class SafeFilterIcon extends Component {
         role="button"
         className={cn(
           "btn btn-sm h-full btn-soft rounded-r-none",
-          "rounded-l-xs p-px w-8 border-0",
-          "transition transition-colors duration-500",
+          "rounded-l-xs p-px w-8 border-0 hover:bg-base-200",
+          "transition transition-colors duration-500 relative",
         )}
       >
-        <Icon.filter className={cn("w-6 h-6 border-b-0")} />
+        <div className="relative">
+          <div className="absolute -bottom-3 left-0 w-full h-full flex justify-center align-center">
+            <label className={cn("swap swap-rotate h-3 w-3")}>
+              <input
+                type="checkbox"
+                checked={!this.props.inadAttendance}
+                onClick={(e) => e.preventDefault()}
+              />
+              <div className="swap-on text-accent">
+                <Icon.minus className="h-3 w-3 opacity-50" />
+              </div>
+              <div className="swap-off text-secondary">
+                <Icon.xmark className="h-3 w-3" />
+              </div>
+            </label>
+          </div>
+          <Icon.turnDown
+            className={cn("w-4 h-4 relative -top-1 border-b-0 text-warning")}
+          />
+        </div>
       </button>
     );
   }
@@ -1568,7 +1591,7 @@ export default function PureApp(props) {
       const nDir = isBy ? (isAscSort ? "desc" : "asc") : U.getDefaultDir(by);
       return (
         <a
-          href={genUrl({ sort: { by, dir: nDir } })}
+          href={genUrl({ sort: { by, dir: nDir }, filter })}
           className={cn(
             "group transition ease-in-out duration-300 whitespace-nowrap",
             "flex font-bold hover:underline hover:text-primary items-center",
@@ -3194,6 +3217,7 @@ export default function PureApp(props) {
   const anyFilterChange = fadded.size + fminus.size > 0;
   const isStatsPage = page === "stats";
   const isH2hPage = page === "h2h";
+  const inadAttendanceTip = `${filter.inadAttendance ? "Show" : "Hide"} Insufficient Attendance`;
   return (
     <div className="container overflow-hidden max-w-290 rounded-none min-h-screen mx-auto px-0 card bg-base-100 shadow-xl m-4 my-0">
       <div
@@ -3291,169 +3315,28 @@ export default function PureApp(props) {
                         players={players}
                       />
                     </div>
-                    <div
+                    <a
+                      href={genUrl({
+                        filter: {
+                          ...filter,
+                          inadAttendance: !filter.inadAttendance,
+                        },
+                      })}
+                      data-tip={inadAttendanceTip}
                       className={cn(
                         "absolute z-10 top-0 left-px h-full",
-                        "dropdown dropdown-hover dropdown-start overflow-visible",
+                        "tooltip tooltip-bottom overflow-visible",
                         "border border-gray-300 dark:border-gray-700 border-0",
                         "transition-transform transition-colors join-item",
                         "duration-300 border-r-1",
                         isStatsPage ? "translate-x-0" : "-translate-x-9",
                       )}
                     >
-                      <SafeFilterIcon anyFilterChange={anyFilterChange} />
-                      <ul
-                        tabIndex={-1}
-                        key={`filter-dropdown-${periodId}`}
-                        className={cn(
-                          "dropdown-content menu bg-base-200 rounded-box",
-                          "z-50 w-74 p-2 shadow-sm -left-8",
-                          { hidden: page !== "stats" },
-                        )}
-                      >
-                        <li className={cn("menu-title text-center")}>
-                          Filters
-                        </li>
-                        <li>
-                          <a
-                            className={menuCn(
-                              false,
-                              "flex flex-col items-stretch",
-                            )}
-                            href={genUrl({
-                              filter: {
-                                ...filter,
-                                outOfRegion: !filter.outOfRegion,
-                              },
-                            })}
-                          >
-                            <label
-                              className={cn(
-                                "flex items-center justify-between",
-                                "cursor-pointer",
-                              )}
-                            >
-                              <span
-                                className={cn({
-                                  "text-warning font-bold italic":
-                                    Boolean(filter.outOfRegion) !==
-                                    Boolean(defaultFilter.outOfRegion),
-                                })}
-                              >
-                                {FIcons.inRegion("s4")}
-                                &nbsp; Out of Region
-                              </span>
-                              <label
-                                className={cn(
-                                  "swap swap-rotate h-7 w-7 p-1 border-1",
-                                  "rounded-box shadow-sm",
-                                  "border-gray-300 bg-white",
-                                  "dark:border-gray-700 dark:bg-black",
-                                )}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={!filter.outOfRegion}
-                                  onClick={(e) => e.preventDefault()}
-                                />
-                                <div className="swap-on text-accent">
-                                  <Icon.minus className="m-1 h-3 w-3 opacity-50" />
-                                </div>
-                                <div className="swap-off text-secondary">
-                                  <Icon.xmark className="h-5 w-5" />
-                                </div>
-                              </label>
-                            </label>
-                          </a>
-                        </li>
-                        <li>
-                          <a
-                            className={menuCn(
-                              false,
-                              "flex flex-col items-stretch",
-                            )}
-                            href={genUrl({
-                              filter: {
-                                ...filter,
-                                inadAttendance: !filter.inadAttendance,
-                              },
-                            })}
-                          >
-                            <label className="flex items-center justify-between cursor-pointer">
-                              <span
-                                className={cn({
-                                  "text-warning font-bold italic":
-                                    Boolean(filter.inadAttendance) !==
-                                    Boolean(defaultFilter.inadAttendance),
-                                })}
-                              >
-                                {FIcons.doesMeetActivity("s4")}
-                                &nbsp; Insufficient Attendance
-                              </span>
-                              <label
-                                className={cn(
-                                  "swap swap-rotate h-7 w-7 p-1 border-1",
-                                  "rounded-box shadow-sm",
-                                  "border-gray-300 bg-white",
-                                  "dark:border-gray-700 dark:bg-black",
-                                )}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={!filter.inadAttendance}
-                                  onClick={(e) => e.preventDefault()}
-                                />
-                                <div className="swap-on text-accent">
-                                  <Icon.minus className="m-1 h-3 w-3 opacity-50" />
-                                </div>
-                                <div className="swap-off text-secondary">
-                                  <Icon.xmark className="h-5 w-5" />
-                                </div>
-                              </label>
-                            </label>
-                          </a>
-                        </li>
-                        <li className={cn("menu-title text-center")}>
-                          testing
-                        </li>
-                        <li>
-                          <a
-                            className={menuCn(
-                              false,
-                              "flex flex-col items-stretch",
-                            )}
-                            href={genUrl({
-                              filter: { ...filter },
-                              rating: !rating ? "alt1" : undefined,
-                            })}
-                          >
-                            <label className="flex items-center justify-between cursor-pointer">
-                              <span>view denormalized ratings</span>
-                              <label
-                                className={cn(
-                                  "swap swap-rotate h-7 w-7 p-1 border-1",
-                                  "rounded-box shadow-sm",
-                                  "border-gray-300 bg-white",
-                                  "dark:border-gray-700 dark:bg-black",
-                                )}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={rating === "alt1"}
-                                  onClick={(e) => e.preventDefault()}
-                                />
-                                <div className="swap-on text-accent">
-                                  <Icon.asterisk className="m-1 h-3 w-3 opacity-50" />
-                                </div>
-                                <div className="swap-off text-secondary">
-                                  <Icon.xmark className="h-5 w-5" />
-                                </div>
-                              </label>
-                            </label>
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
+                      <SafeFilterIcon
+                        inadAttendance={filter.inadAttendance}
+                        anyFilterChange={anyFilterChange}
+                      />
+                    </a>
                   </div>
 
                   <PlayerSearch2

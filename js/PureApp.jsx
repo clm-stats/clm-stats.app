@@ -1153,7 +1153,7 @@ class TournamentsList extends Component {
                       <div
                         className={cn(
                           "transition transition-colors duration-300",
-                          "relative pb-1 aspect-square bg-base-100",
+                          "relative h-17 pb-1 aspect-square bg-base-100",
                           "group-has-[a.gglink:hover]:bg-primary/10",
                         )}
                       >

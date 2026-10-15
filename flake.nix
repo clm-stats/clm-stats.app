@@ -5,6 +5,7 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-root.url = "github:srid/flake-root";
     spago.url = "github:mitchdzugan/nix-spago";
+    tsdown.url = "github:mitchdzugan/nix-tsdown";
   };
   outputs = inputs: (
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
@@ -20,8 +21,11 @@
               inputs.spago.packages.${system}.spago
               (pkgs.writeShellScriptBin "build" ''
                 cd $FLAKE_ROOT
-                spago build
-                npx vite build -c ./vite.client.mjs
+                npm ci
+                npx rimraf dist
+                npm run build:purescript
+                npm run build:js
+                npm run build:css
               '')
             ];
           };

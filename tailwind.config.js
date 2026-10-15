@@ -1,5 +1,5 @@
 module.exports = {
-    content: ["./js/**/*.{js,jsx}"],
+    content: ["./dist/clmStatsApp.js"],
     theme: {
         extend: {},
     },

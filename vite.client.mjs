@@ -13,10 +13,10 @@ export default defineConfig({
     emptyOutDir: true,
     outDir: `${__dirname}/dist`,
     lib: {
-      entry: `${__dirname}/js/mountClient.js`,
+      entry: `${__dirname}/output/Main/index.js`,
       name: "clmStats",
-      formats: ["umd"],
-      fileName: () => "mountClient.js",
+      formats: ["es"],
+      fileName: () => "clmStatsApp.js",
     },
   },
 });

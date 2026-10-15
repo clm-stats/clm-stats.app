@@ -1,0 +1,11 @@
+package:
+  name: clm-stats-app
+  dependencies:
+    - z
+workspace:
+  packageSet:
+    registry: 77.13.1
+  extraPackages:
+    z:
+      git: https://github.com/mitchdzugan/Z.purs.git
+      ref: 3130e6d162986106d1d2fc4571c9867c263a9a14

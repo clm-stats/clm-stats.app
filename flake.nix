@@ -23,9 +23,7 @@
                 cd $FLAKE_ROOT
                 npm ci
                 npx rimraf dist
-                npm run build:purescript
-                npm run build:js
-                npm run build:css
+                npm run build
               '')
             ];
           };

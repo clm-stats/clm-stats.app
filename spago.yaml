@@ -8,4 +8,4 @@ workspace:
   extraPackages:
     z:
       git: https://github.com/mitchdzugan/Z.purs.git
-      ref: 3130e6d162986106d1d2fc4571c9867c263a9a14
+      ref: eeac525e6d8841086ef8afd5ee662fa6d59f5dc3

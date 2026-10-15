@@ -5,6 +5,7 @@
   "author": "Mitch Dzugan <mitchdzugan@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "build": "run-s build:purescript build:js build:css",
     "build:purescript": "spago build",
     "build:js": "vite build -c ./vite.client.mjs",
     "build:css": "postcss -o ./dist/styles.css ./styles.css",

@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "classnames": "^2.5.1",
-    "fuzzysort": "^4.0.2",
+    "fuzzysort": "^3.1.0",
     "preact": "^10.28.4"
   },
   "devDependencies": {

@@ -13,12 +13,14 @@ export default defineConfig({
     visualizer({
       open: false,
       filename: "stats.html",
+      sourcemap: true,
       gzipSize: true,
       brotliSize: true,
     }),
   ],
   build: {
     minify: "terser",
+    sourcemap: true,
     emptyOutDir: true,
     outDir: `${__dirname}/dist`,
     lib: {

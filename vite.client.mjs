@@ -24,7 +24,7 @@ export default defineConfig({
     emptyOutDir: true,
     outDir: `${__dirname}/dist`,
     lib: {
-      entry: `${__dirname}/output/Main/index.js`,
+      entry: `${__dirname}/output-es/Main/index.js`,
       name: "clmStats",
       formats: ["es"],
       fileName: () => "clmStatsApp.js",

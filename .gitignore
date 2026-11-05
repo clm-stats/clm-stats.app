@@ -4,5 +4,6 @@
 /index.html
 /.spago
 /output
+/output-es
 /spago.lock
-/stats.html
+/stats*.html

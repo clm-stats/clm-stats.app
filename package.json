@@ -7,7 +7,7 @@
   "scripts": {
     "build": "run-s build:purescript build:optimize build:js build:css",
     "build:purescript": "spago build",
-    "build:optimize": "purs-backend-es build",
+    "build:optimize": "purs-backend-es build --int-tags",
     "build:js": "vite build -c ./vite.client.mjs",
     "build:css": "postcss -o ./dist/styles.css ./styles.css",
     "dev:mkhtml": "node -e 'require(\"fs\").writeFileSync(__dirname+\"/index.html\",require(\"./js/htmlDocTemplate.js\").default({timeline:JSON.parse(require(\"fs\").readFileSync(require(\"path\").join(process.env.CLM_STATS_PAGES_CO,\"docs\",\"timeline.json\"),\"utf8\"))}))'",
